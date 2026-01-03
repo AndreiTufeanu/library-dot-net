@@ -22,7 +22,7 @@
                 c => new
                     {
                         Id = c.Guid(nullable: false),
-                        Title = c.String(maxLength: 300),
+                        Title = c.String(nullable: false, maxLength: 300),
                         Description = c.String(maxLength: 500),
                     })
                 .PrimaryKey(t => t.Id);
@@ -47,12 +47,12 @@
                         Id = c.Guid(nullable: false),
                         NumberOfPages = c.Int(nullable: false),
                         PublicationDate = c.DateTime(nullable: false),
-                        Book_Id = c.Guid(),
-                        BookType_Id = c.Guid(),
+                        Book_Id = c.Guid(nullable: false),
+                        BookType_Id = c.Guid(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Books", t => t.Book_Id)
-                .ForeignKey("dbo.BookTypes", t => t.BookType_Id)
+                .ForeignKey("dbo.Books", t => t.Book_Id, cascadeDelete: true)
+                .ForeignKey("dbo.BookTypes", t => t.BookType_Id, cascadeDelete: true)
                 .Index(t => t.Book_Id)
                 .Index(t => t.BookType_Id);
             
@@ -63,10 +63,10 @@
                         Id = c.Guid(nullable: false),
                         IsLectureRoomOnly = c.Boolean(nullable: false),
                         IsAvailable = c.Boolean(nullable: false),
-                        Edition_Id = c.Guid(),
+                        Edition_Id = c.Guid(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Editions", t => t.Edition_Id)
+                .ForeignKey("dbo.Editions", t => t.Edition_Id, cascadeDelete: true)
                 .Index(t => t.Edition_Id);
             
             CreateTable(
@@ -79,12 +79,12 @@
                         ReturnDate = c.DateTime(),
                         ExtendedDueDate = c.DateTime(),
                         ExtensionDays = c.Int(),
-                        Librarian_Id = c.Guid(),
-                        Reader_Id = c.Guid(),
+                        Librarian_Id = c.Guid(nullable: false),
+                        Reader_Id = c.Guid(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Librarians", t => t.Librarian_Id)
-                .ForeignKey("dbo.Readers", t => t.Reader_Id)
+                .ForeignKey("dbo.Librarians", t => t.Librarian_Id, cascadeDelete: true)
+                .ForeignKey("dbo.Readers", t => t.Reader_Id, cascadeDelete: true)
                 .Index(t => t.Librarian_Id)
                 .Index(t => t.Reader_Id);
             
@@ -167,9 +167,9 @@
         {
             DropForeignKey("dbo.Editions", "BookType_Id", "dbo.BookTypes");
             DropForeignKey("dbo.BookCopies", "Edition_Id", "dbo.Editions");
-            DropForeignKey("dbo.Librarians", "ReaderDetails_Id", "dbo.Readers");
             DropForeignKey("dbo.Borrowings", "Reader_Id", "dbo.Readers");
             DropForeignKey("dbo.Borrowings", "Librarian_Id", "dbo.Librarians");
+            DropForeignKey("dbo.Librarians", "ReaderDetails_Id", "dbo.Readers");
             DropForeignKey("dbo.BorrowingBookCopies", "BookCopy_Id", "dbo.BookCopies");
             DropForeignKey("dbo.BorrowingBookCopies", "Borrowing_Id", "dbo.Borrowings");
             DropForeignKey("dbo.Editions", "Book_Id", "dbo.Books");
