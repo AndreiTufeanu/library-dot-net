@@ -8,8 +8,8 @@
     <ProjectGuid>{66B7C594-4C38-4440-93D9-1447C8230901}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DataMapper</RootNamespace>
-    <AssemblyName>DataMapper</AssemblyName>
+    <RootNamespace>Infrastructure</RootNamespace>
+    <AssemblyName>Infrastructure</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -53,11 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContext\LibraryContext.cs" />
-    <Compile Include="Migrations\202601021857066_Initial.cs" />
-    <Compile Include="Migrations\202601021857066_Initial.Designer.cs">
-      <DependentUpon>202601021857066_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,12 +66,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202601021857066_Initial.resx">
-      <DependentUpon>202601021857066_Initial.cs</DependentUpon>
-    </EmbeddedResource>
+    <Folder Include="Repositories\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Repositories\" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

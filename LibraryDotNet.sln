@@ -23,9 +23,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceLayer", "ServiceLaye
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServiceLayer", "TestServiceLayer\TestServiceLayer.csproj", "{8284C657-BB1C-4AC8-B78B-D43AD41DFF30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMapper", "DataMapper\DataMapper.csproj", "{66B7C594-4C38-4440-93D9-1447C8230901}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{624DB8B0-791C-4F88-AE7E-50A3DFDBF53B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{66B7C594-4C38-4440-93D9-1447C8230901}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
