@@ -17,18 +17,23 @@ namespace DomainModel
 
         /// <summary>Gets or sets the number of pages.</summary>
         /// <value>The number of pages.</value>
+        [Required(ErrorMessage = "Number of pages is required.")]
+        [Range(30, 5000, ErrorMessage = "Number of pages must be at least {1} and {2}.")]
         public int NumberOfPages { get; set; }
 
         /// <summary>Gets or sets the publication date.</summary>
         /// <value>The publication date.</value>
+        [Required(ErrorMessage = "Publication date is required.")]
         public DateTime PublicationDate { get; set; }
 
         /// <summary>Gets or sets the book.</summary>
         /// <value>The book.</value>
+        [Required(ErrorMessage = "Book is required.")]
         public virtual Book Book { get; set; }
 
         /// <summary>Gets or sets the book type.</summary>
         /// <value>The book type.</value>
+        [Required(ErrorMessage = "Book type is required.")]
         public virtual BookType BookType { get; set; }
 
         /// <summary>Gets or sets the book copies.</summary>

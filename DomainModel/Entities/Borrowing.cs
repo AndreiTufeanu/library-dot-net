@@ -17,10 +17,12 @@ namespace DomainModel
 
         /// <summary>Gets or sets the borrow date.</summary>
         /// <value>The borrow date.</value>
+        [Required(ErrorMessage = "Borrow date is required.")]
         public DateTime BorrowDate { get; set; }
 
         /// <summary>Gets or sets the due date.</summary>
         /// <value>The due date.</value>
+        [Required(ErrorMessage = "Due date is required.")]
         public DateTime DueDate { get; set; }
 
         /// <summary>Gets or sets the return date.</summary>
@@ -37,6 +39,7 @@ namespace DomainModel
 
         /// <summary>Gets or sets the reader.</summary>
         /// <value>The reader.</value>
+        [Required(ErrorMessage = "Reader is required.")]
         public virtual Reader Reader { get; set; }
 
         /// <summary>Gets or sets the borrowed book copies.</summary>
@@ -45,6 +48,7 @@ namespace DomainModel
 
         /// <summary>Gets or sets the librarian who processed the loan.</summary>
         /// <value>The librarian.</value>
+        [Required(ErrorMessage = "Librarian is required.")]
         public virtual Librarian Librarian { get; set; }
     }
 }

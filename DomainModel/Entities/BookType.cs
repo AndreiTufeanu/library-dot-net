@@ -17,8 +17,9 @@ namespace DomainModel
 
         /// <summary>Gets or sets the name.</summary>
         /// <value>The name.</value>
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "Book type name is required.")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "Book type name must be between {2} and {1} characters.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Book type name can only contain letters and spaces.")]
         public string Name { get; set; }
 
         /// <summary>Gets or sets the editions.</summary>

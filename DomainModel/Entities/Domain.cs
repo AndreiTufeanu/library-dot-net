@@ -16,13 +16,13 @@ namespace DataMapper
 
         /// <summary>Gets or sets the name.</summary>
         /// <value>The name.</value>
-        [Required]
-        [StringLength(200)]
+        [Required(ErrorMessage = "Domain name is required.")]
+        [StringLength(200, MinimumLength = 2, ErrorMessage = "Domain name must be between {2} and {1} characters.")]
         public string Name { get; set; }
 
         /// <summary>Gets or sets the description.</summary>
         /// <value>The description.</value>
-        [StringLength(1000)]
+        [StringLength(1000, ErrorMessage = "Description cannot exceed {1} characters.")]
         public string Description { get; set; }
 
         /// <summary>Gets or sets the parent domain.</summary>

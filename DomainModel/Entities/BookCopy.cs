@@ -17,14 +17,17 @@ namespace DomainModel
 
         /// <summary>Gets or sets a value indicating whether is lecture room only.</summary>
         /// <value>The is lecture room only.</value>
+        [Required]
         public bool IsLectureRoomOnly { get; set; }
 
         /// <summary>Gets or sets a value indicating whether is available.</summary>
         /// <value>The is available.</value>
+        [Required]
         public bool IsAvailable { get; set; } = true;
 
         /// <summary>Gets or sets the edition.</summary>
         /// <value>The edition.</value>
+        [Required(ErrorMessage = "Edition is required.")]
         public virtual Edition Edition { get; set; }
 
         /// <summary>Gets or sets the borrowings.</summary>

@@ -20,13 +20,15 @@ namespace DataMapper
         /// <summary>Gets or sets the first name.</summary>
         /// <value>The first name.</value>
         [Required(ErrorMessage = "First Name is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Fist Name must have between 2 and 100 characters.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Fist Name must have between {2} and {1} characters.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "First Name can only contain letters and spaces.")]
         public string FirstName { get; set; }
 
         /// <summary>Gets or sets the last name.</summary>
         /// <value>The last name.</value>
         [Required(ErrorMessage = "Last name is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Last Name must have between 2 and 100 characters.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Last Name must have between {2} and {1} characters.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Last Name can only contain letters and spaces.")]
         public string LastName { get; set; }
 
         /// <summary>Gets or sets the books.</summary>

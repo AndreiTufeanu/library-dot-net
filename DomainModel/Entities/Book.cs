@@ -19,12 +19,13 @@ namespace DomainModel
 
         /// <summary>Gets or sets the title.</summary>
         /// <value>The title.</value>
-        [StringLength(300)]
+        [Required(ErrorMessage = "Title is required.")]
+        [StringLength(300, MinimumLength = 2, ErrorMessage = "Title must be between {2} and {1} characters.")]
         public string Title { get; set; }
 
         /// <summary>Gets or sets the description.</summary>
         /// <value>The description.</value>
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "Description cannot exceed {1} characters.")]
         public string Description { get; set; }
 
         /// <summary>Gets or sets the authors.</summary>
