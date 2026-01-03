@@ -57,6 +57,10 @@
     <Compile Include="Migrations\202601031206110_Initial.Designer.cs">
       <DependentUpon>202601031206110_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202601031320488_AddValidationToAllEntities.cs" />
+    <Compile Include="Migrations\202601031320488_AddValidationToAllEntities.Designer.cs">
+      <DependentUpon>202601031320488_AddValidationToAllEntities.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -79,6 +83,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202601031206110_Initial.resx">
       <DependentUpon>202601031206110_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202601031320488_AddValidationToAllEntities.resx">
+      <DependentUpon>202601031320488_AddValidationToAllEntities.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
