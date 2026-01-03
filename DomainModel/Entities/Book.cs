@@ -1,4 +1,4 @@
-﻿using DataMapper;
+﻿using DomainModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DomainModel
+namespace DomainModel.Entities
 {
     /// <summary>Represents a book.</summary>
     public class Book

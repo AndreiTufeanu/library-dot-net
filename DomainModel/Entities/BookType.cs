@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DomainModel
+namespace DomainModel.Entities
 {
     /// <summary>Represents a type of book.</summary>
     public class BookType

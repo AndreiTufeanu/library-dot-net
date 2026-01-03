@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataMapper
+namespace DomainModel.Entities
 {
     /// <summary>Represents a book author.</summary>
     public class Author
