@@ -47,6 +47,7 @@
   <ItemGroup>
     <Folder Include="ServiceContracts\" />
     <Folder Include="Services\" />
+    <Folder Include="Validators\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
