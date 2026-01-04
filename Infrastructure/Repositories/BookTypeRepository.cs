@@ -19,43 +19,62 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public BookType GetById(Guid id)
+        public async Task<BookType> GetByIdAsync(Guid id)
         {
-            return _context.BookTypes.Find(id);
+            return await _context.BookTypes.FindAsync(id);
         }
 
-        public IEnumerable<BookType> GetAll()
+        public async Task<IEnumerable<BookType>> GetAllAsync()
         {
-            return _context.BookTypes.ToList();
+            return await _context.BookTypes.ToListAsync();
         }
 
-        public void Add(BookType entity)
+        public async Task<bool> ExistsAsync(Guid id)
         {
-            _context.BookTypes.Add(entity);
+            return await _context.BookTypes.AnyAsync(bt => bt.Id == id);
         }
 
-        public void Update(BookType entity)
+        public async Task<BookType> FindByNameAsync(string name)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            return await _context.BookTypes
+                .FirstOrDefaultAsync(bt => bt.Name.ToLower() == name.ToLower());
         }
 
-        public void Delete(Guid id)
+        public async Task<BookType> AddAsync(BookType entity)
         {
-            var bookType = _context.BookTypes.Find(id);
-            if (bookType != null)
-            {
-                _context.BookTypes.Remove(bookType);
-            }
+            var addedEntity = _context.BookTypes.Add(entity);
+            await _context.SaveChangesAsync();
+            return addedEntity;
         }
 
-        public bool Exists(Guid id)
+        public async Task<BookType> UpdateAsync(BookType entity)
         {
-            return _context.BookTypes.Any(bt => bt.Id == id);
+            var existingEntity = await _context.BookTypes.FindAsync(entity.Id);
+            if (existingEntity == null)
+                throw new ArgumentException($"BookType with ID {entity.Id} not found");
+
+            _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            await _context.SaveChangesAsync();
+            return existingEntity;
         }
 
-        public void SaveChanges()
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            _context.SaveChanges();
+            var bookType = await _context.BookTypes.FindAsync(id);
+            if (bookType == null)
+                return false;
+
+            _context.BookTypes.Remove(bookType);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> HasEditionsAsync(Guid id)
+        {
+            return await _context.BookTypes
+                .Where(bt => bt.Id == id)
+                .SelectMany(bt => bt.Editions)
+                .AnyAsync();
         }
     }
 }
