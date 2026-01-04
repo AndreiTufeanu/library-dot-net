@@ -60,12 +60,15 @@
     <Compile Include="Entities\BookCopy.cs" />
     <Compile Include="Entities\BookType.cs" />
     <Compile Include="Entities\Borrowing.cs" />
+    <Compile Include="Entities\ConfigurationSetting.cs" />
     <Compile Include="Entities\Domain.cs" />
     <Compile Include="Entities\Edition.cs" />
     <Compile Include="Entities\Librarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\Reader.cs" />
     <Compile Include="RepositoryContracts\IBookTypeRepository.cs" />
+    <Compile Include="RepositoryContracts\IConfigurationSettingRepository.cs" />
+    <Compile Include="RepositoryContracts\IRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
