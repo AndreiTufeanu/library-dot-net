@@ -103,9 +103,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\BusinessRuleException.cs" />
+    <Compile Include="Exceptions\NotFoundException.cs" />
+    <Compile Include="Exceptions\ValidationException.cs" />
+    <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContracts\IBookTypeService.cs" />
+    <Compile Include="ServiceContracts\IService.cs" />
     <Compile Include="ServiceExtensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\BookTypeService.cs" />
     <Compile Include="Validators\BookTypeValidator.cs" />
   </ItemGroup>
