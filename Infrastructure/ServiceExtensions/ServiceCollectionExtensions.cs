@@ -14,6 +14,8 @@ namespace Infrastructure.ServiceExtensions
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddScoped<IBookTypeRepository, BookTypeRepository>();
+            services.AddScoped<IConfigurationSettingRepository, ConfigurationSettingRepository>();
+            services.AddMemoryCache();
             return services;
         }
     }
