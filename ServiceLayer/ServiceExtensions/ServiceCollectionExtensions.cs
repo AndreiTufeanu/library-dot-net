@@ -1,12 +1,9 @@
-﻿using FluentValidation;
+﻿using DomainModel.Entities;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceLayer.ServiceContracts;
+using ServiceLayer.Services;
 using ServiceLayer.Validators;
-using System;
-using DomainModel.Entities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServiceLayer.ServiceExtensions
 {
@@ -14,9 +11,12 @@ namespace ServiceLayer.ServiceExtensions
     {
         public static IServiceCollection AddServiceLayerServices(this IServiceCollection services)
         {
+            // Register validators
             services.AddTransient<IValidator<BookType>, BookTypeValidator>();
 
-            services.AddScoped<ServiceContracts.IBookTypeService, Services.BookTypeService>();
+            // Register services
+            services.AddScoped<IBookTypeService, BookTypeService>();
+            services.AddScoped<IConfigurationService, ConfigurationService>();
 
             return services;
         }
