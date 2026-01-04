@@ -1,5 +1,4 @@
 ﻿using DomainModel.Entities;
-using DomainModel.RepositoryContracts.DomainModel.RepositoryContracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
