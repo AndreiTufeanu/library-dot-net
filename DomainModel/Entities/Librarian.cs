@@ -10,17 +10,17 @@ namespace DomainModel.Entities
     /// <summary>Represents a librarian.</summary>
     public class Librarian
     {
-        /// <summary>Gets or sets the identifier.</summary>
-        /// <value>The identifier.</value>
+        /// <summary>Gets or sets the unique identifier.</summary>
+        /// <value>A unique GUID that identifies this librarian in the system.</value>
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        /// <summary>Gets or sets the reader account.</summary>
-        /// <value>The reader account.</value>
+        /// <summary>Gets or sets the reader account details for this librarian.</summary>
+        /// <value>The <see cref="Reader"/> entity containing the personal details of this librarian.</value>
         public virtual Reader ReaderDetails { get; set; }
 
-        /// <summary>Gets or sets the processed loans.</summary>
-        /// <value>The processed loans.</value>
+        /// <summary>Gets or sets the collection of loans processed by this librarian.</summary>
+        /// <value>A collection of <see cref="Borrowing"/> entities that were processed by this librarian.</value>
         public virtual ICollection<Borrowing> ProcessedLoans { get; set; }
     }
 }
