@@ -9,12 +9,13 @@ namespace DomainModel.RepositoryContracts
 {
     public interface IBookTypeRepository
     {
-        BookType GetById(Guid id);
-        IEnumerable<BookType> GetAll();
-        void Add(BookType entity);
-        void Update(BookType entity);
-        void Delete(Guid id);
-        bool Exists(Guid id);
-        void SaveChanges();
+        Task<BookType> GetByIdAsync(Guid id);
+        Task<IEnumerable<BookType>> GetAllAsync();
+        Task<bool> ExistsAsync(Guid id);
+        Task<BookType> FindByNameAsync(string name);
+        Task<BookType> AddAsync(BookType entity);
+        Task<BookType> UpdateAsync(BookType entity);
+        Task<bool> DeleteAsync(Guid id); 
+        Task<bool> HasEditionsAsync(Guid id);
     }
 }
