@@ -66,44 +66,52 @@ namespace ServiceLayer.Services
         {
             return Task.FromResult((int)_defaultValues[ConfigurationConstants.MaxDomainsPerBook]);
         }
-    #endregion
+        #endregion
 
         #region Reader Constants
-        public async Task<int> GetMaxBooksInPeriodAsync()
+        public async Task<int> GetMaxBooksInPeriodAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriod, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriod, async () =>
             {
                 return await _repository.GetIntValueAsync(ConfigurationConstants.MaxBooksInPeriod,
                     (int)_defaultValues[ConfigurationConstants.MaxBooksInPeriod]);
             });
+
+            return forLibrarian ? baseValue * 2 : baseValue;
         }
 
-        public async Task<TimeSpan> GetBorrowingPeriodAsync()
+        public async Task<TimeSpan> GetBorrowingPeriodAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
             {
                 var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.BorrowingPeriodDays,
                     (double)_defaultValues[ConfigurationConstants.BorrowingPeriodDays]);
                 return TimeSpan.FromDays(days);
             });
+
+            return forLibrarian ? TimeSpan.FromDays(baseValue.TotalDays / 2) : baseValue;
         }
 
-        public async Task<int> GetMaxBooksPerBorrowingAsync()
+        public async Task<int> GetMaxBooksPerBorrowingAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.MaxBooksPerBorrowing, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksPerBorrowing, async () =>
             {
                 return await _repository.GetIntValueAsync(ConfigurationConstants.MaxBooksPerBorrowing,
                     (int)_defaultValues[ConfigurationConstants.MaxBooksPerBorrowing]);
             });
+
+            return forLibrarian ? baseValue * 2 : baseValue;
         }
 
-        public async Task<int> GetMaxBooksSameDomainAsync()
+        public async Task<int> GetMaxBooksSameDomainAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.MaxBooksSameDomain, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksSameDomain, async () =>
             {
                 return await _repository.GetIntValueAsync(ConfigurationConstants.MaxBooksSameDomain,
                     (int)_defaultValues[ConfigurationConstants.MaxBooksSameDomain]);
             });
+
+            return forLibrarian ? baseValue * 2 : baseValue;
         }
 
         public async Task<TimeSpan> GetSameDomainTimeLimitAsync()
@@ -116,23 +124,27 @@ namespace ServiceLayer.Services
             });
         }
 
-        public async Task<int> GetMaxOvertimeSumAsync()
+        public async Task<int> GetMaxOvertimeSumAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.MaxOvertimeSumDays, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxOvertimeSumDays, async () =>
             {
                 return await _repository.GetIntValueAsync(ConfigurationConstants.MaxOvertimeSumDays,
                     (int)_defaultValues[ConfigurationConstants.MaxOvertimeSumDays]);
             });
+
+            return forLibrarian ? baseValue * 2 : baseValue;
         }
 
-        public async Task<TimeSpan> GetSameBookDelayAsync()
+        public async Task<TimeSpan> GetSameBookDelayAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.SameBookDelayDays, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.SameBookDelayDays, async () =>
             {
                 var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays,
                     (double)_defaultValues[ConfigurationConstants.SameBookDelayDays]);
                 return TimeSpan.FromDays(days);
             });
+
+            return forLibrarian ? TimeSpan.FromDays(baseValue.TotalDays / 2) : baseValue;
         }
 
         public async Task<int> GetMaxBooksPerDayAsync()

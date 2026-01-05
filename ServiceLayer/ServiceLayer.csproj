@@ -110,7 +110,6 @@
     <Compile Include="Exceptions\NotFoundException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Helpers\ConfigurationConstantsHelper.cs" />
-    <Compile Include="Helpers\ConfigurationHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContracts\IBookTypeService.cs" />
