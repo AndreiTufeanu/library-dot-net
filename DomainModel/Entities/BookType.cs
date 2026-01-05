@@ -24,6 +24,6 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of editions that use this book type.</summary>
         /// <value>A collection of <see cref="Edition"/> entities that belong to this book type.</value>
-        public virtual ICollection<Edition> Editions { get; set; }
+        public virtual ICollection<Edition> Editions { get; set; } = new HashSet<Edition>();
     }
 }

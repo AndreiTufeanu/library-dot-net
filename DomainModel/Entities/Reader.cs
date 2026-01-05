@@ -59,6 +59,6 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of borrowing records for this reader.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities representing this reader's borrowing history.</value>
-        public virtual ICollection<Borrowing> Borrowings { get; set; }
+        public virtual ICollection<Borrowing> Borrowings { get; set; } = new HashSet<Borrowing>();
     }
 }

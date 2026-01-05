@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace DomainModel.Entities
 {
@@ -31,10 +32,66 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of subdomains.</summary>
         /// <value>A collection of <see cref="Domain"/> entities that are children of this domain.</value>
-        public virtual ICollection<Domain> Subdomains { get; set; }
+        public virtual ICollection<Domain> Subdomains { get; set; } = new HashSet<Domain>();
 
         /// <summary>Gets or sets the books belonging to this domain.</summary>
         /// <value>A collection of <see cref="Book"/> entities categorized under this domain.</value>
-        public virtual ICollection<Book> Books { get; set; }
+        public virtual ICollection<Book> Books { get; set; } = new HashSet<Book>();
+
+        /// <summary>
+        /// Determines whether the specified domain is a descendant of this domain.
+        /// </summary>
+        /// <param name="otherDomain">The domain to check for descendant relationship.</param>
+        /// <returns>
+        /// <c>true</c> if the specified domain is a descendant (child, grandchild, etc.) 
+        /// of this domain; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when otherDomain is null.</exception>
+        /// <remarks>
+        /// This method performs a recursive check through the domain hierarchy.
+        /// It assumes that the Subdomains navigation property is properly loaded.
+        /// </remarks>
+        public bool IsDescendant(Domain otherDomain)
+        {
+            if (otherDomain == null)
+                throw new ArgumentNullException(nameof(otherDomain));
+
+            foreach (var subdomain in Subdomains ?? Enumerable.Empty<Domain>())
+            {
+                if (subdomain.Id == otherDomain.Id || subdomain.IsDescendant(otherDomain))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines whether the specified domain is an ancestor of this domain.
+        /// </summary>
+        /// <param name="otherDomain">The domain to check for ancestor relationship.</param>
+        /// <returns>
+        /// <c>true</c> if the specified domain is an ancestor (parent, grandparent, etc.) 
+        /// of this domain; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when otherDomain is null.</exception>
+        /// <remarks>
+        /// This method traverses up the domain hierarchy chain.
+        /// It assumes that the ParentDomain navigation property is properly loaded.
+        /// </remarks>
+        public bool IsAncestor(Domain otherDomain)
+        {
+            if (otherDomain == null)
+                throw new ArgumentNullException(nameof(otherDomain));
+
+            var current = ParentDomain;
+            while (current != null)
+            {
+                if (current.Id == otherDomain.Id)
+                    return true;
+                current = current.ParentDomain;
+            }
+
+            return false;
+        }
     }
 }
