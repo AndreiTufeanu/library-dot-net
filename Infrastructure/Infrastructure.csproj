@@ -111,8 +111,16 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\AuthorRepository.cs" />
+    <Compile Include="Repositories\BookCopyRepository.cs" />
+    <Compile Include="Repositories\BookRepository.cs" />
     <Compile Include="Repositories\BookTypeRepository.cs" />
+    <Compile Include="Repositories\BorrowingRepository.cs" />
     <Compile Include="Repositories\ConfigurationSettingRepository.cs" />
+    <Compile Include="Repositories\DomainRepository.cs" />
+    <Compile Include="Repositories\EditionRepository.cs" />
+    <Compile Include="Repositories\LibrarianRepository.cs" />
+    <Compile Include="Repositories\ReaderRepository.cs" />
     <Compile Include="ServiceCollectionExtensionMethods\ServiceCollectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

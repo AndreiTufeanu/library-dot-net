@@ -66,8 +66,16 @@
     <Compile Include="Entities\Librarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\Reader.cs" />
+    <Compile Include="RepositoryContracts\IAuthorRepository.cs" />
+    <Compile Include="RepositoryContracts\IBookCopyRepository.cs" />
+    <Compile Include="RepositoryContracts\IBookRepository.cs" />
     <Compile Include="RepositoryContracts\IBookTypeRepository.cs" />
+    <Compile Include="RepositoryContracts\IBorrowingRepository.cs" />
     <Compile Include="RepositoryContracts\IConfigurationSettingRepository.cs" />
+    <Compile Include="RepositoryContracts\IDomainRepository.cs" />
+    <Compile Include="RepositoryContracts\IEditionRepository.cs" />
+    <Compile Include="RepositoryContracts\ILibrarianRepository.cs" />
+    <Compile Include="RepositoryContracts\IReaderRepository.cs" />
     <Compile Include="RepositoryContracts\IRepository.cs" />
   </ItemGroup>
   <ItemGroup>
