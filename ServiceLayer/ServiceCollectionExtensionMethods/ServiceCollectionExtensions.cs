@@ -5,7 +5,7 @@ using ServiceLayer.ServiceContracts;
 using ServiceLayer.Services;
 using ServiceLayer.Validators;
 
-namespace ServiceLayer.ServiceExtensions
+namespace ServiceLayer.ServiceCollectionExtensionMethods
 {
     public static class ServiceCollectionExtensions
     {

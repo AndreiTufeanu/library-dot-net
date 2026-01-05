@@ -116,7 +116,7 @@
     <Compile Include="ServiceContracts\IBookTypeService.cs" />
     <Compile Include="ServiceContracts\IConfigurationSettingService.cs" />
     <Compile Include="ServiceContracts\IService.cs" />
-    <Compile Include="ServiceExtensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="ServiceCollectionExtensionMethods\ServiceCollectionExtensions.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\BookTypeService.cs" />
     <Compile Include="Services\ConfigurationSettingService.cs" />
