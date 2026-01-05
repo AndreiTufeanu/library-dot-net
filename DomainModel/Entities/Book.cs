@@ -63,15 +63,15 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of authors who wrote this book.</summary>
         /// <value>A collection of <see cref="Author"/> entities associated with this book.</value>
-        public virtual ICollection<Author> Authors { get; set; } = new HashSet<Author>();
+        public virtual ICollection<Author> Authors { get; protected set; } = new HashSet<Author>();
 
         /// <summary>Gets or sets the collection of domains this book belongs to.</summary>
         /// <value>A collection of <see cref="Domain"/> entities categorizing this book.</value>
-        public virtual ICollection<Domain> Domains { get; set; } = new HashSet<Domain>();
+        public virtual ICollection<Domain> Domains { get; protected set; } = new HashSet<Domain>();
 
         /// <summary>Gets or sets the collection of editions available for this book.</summary>
         /// <value>A collection of <see cref="Edition"/> entities representing different versions of this book.</value>
-        public virtual ICollection<Edition> Editions { get; set; } = new HashSet<Edition>();
+        public virtual ICollection<Edition> Editions { get; protected set; } = new HashSet<Edition>();
 
         /// <summary>
         /// Sets the initial number of copies for this book.

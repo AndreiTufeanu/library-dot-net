@@ -38,6 +38,6 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the physical copies of this edition.</summary>
         /// <value>A collection of <see cref="BookCopy"/> entities representing the physical copies of this edition.</value>
-        public virtual ICollection<BookCopy> BookCopies { get; set; } = new HashSet<BookCopy>();
+        public virtual ICollection<BookCopy> BookCopies { get; protected set; } = new HashSet<BookCopy>();
     }
 }

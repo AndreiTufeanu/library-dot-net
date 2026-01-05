@@ -33,6 +33,6 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of books written by this author.</summary>
         /// <value>A collection of <see cref="Book"/> entities associated with this author.</value>
-        public virtual ICollection<Book> Books { get; set; } = new HashSet<Book>();
+        public virtual ICollection<Book> Books { get; protected set; } = new HashSet<Book>();
     }
 }

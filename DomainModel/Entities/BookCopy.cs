@@ -32,7 +32,7 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of borrowing records for this book copy.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities tracking the loan history of this book copy.</value>
-        public virtual ICollection<Borrowing> Borrowings { get; set; } = new HashSet<Borrowing>();
+        public virtual ICollection<Borrowing> Borrowings { get; protected set; } = new HashSet<Borrowing>();
 
         /// <summary>
         /// Determines whether this book copy is currently available for borrowing.

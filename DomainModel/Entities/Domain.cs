@@ -32,11 +32,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of subdomains.</summary>
         /// <value>A collection of <see cref="Domain"/> entities that are children of this domain.</value>
-        public virtual ICollection<Domain> Subdomains { get; set; } = new HashSet<Domain>();
+        public virtual ICollection<Domain> Subdomains { get; protected set; } = new HashSet<Domain>();
 
         /// <summary>Gets or sets the books belonging to this domain.</summary>
         /// <value>A collection of <see cref="Book"/> entities categorized under this domain.</value>
-        public virtual ICollection<Book> Books { get; set; } = new HashSet<Book>();
+        public virtual ICollection<Book> Books { get; protected set; } = new HashSet<Book>();
 
         /// <summary>
         /// Determines whether the specified domain is a descendant of this domain.

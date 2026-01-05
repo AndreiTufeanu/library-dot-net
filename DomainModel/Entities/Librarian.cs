@@ -21,7 +21,7 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of loans processed by this librarian.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities that were processed by this librarian.</value>
-        public virtual ICollection<Borrowing> ProcessedLoans { get; set; } = new HashSet<Borrowing>();
+        public virtual ICollection<Borrowing> ProcessedLoans { get; protected set; } = new HashSet<Borrowing>();
 
         /// <summary>
         /// Determines whether this librarian is also registered as a reader in the system.

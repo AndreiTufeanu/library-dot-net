@@ -55,10 +55,10 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the librarian account associated with this reader.</summary>
         /// <value>The <see cref="Librarian"/> entity if this reader is also a librarian; otherwise, <c>null</c>.</value>
-        public virtual Librarian LibrarianAccount { get; set; }
+        public virtual Librarian LibrarianAccount { get; protected set; }
 
         /// <summary>Gets or sets the collection of borrowing records for this reader.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities representing this reader's borrowing history.</value>
-        public virtual ICollection<Borrowing> Borrowings { get; set; } = new HashSet<Borrowing>();
+        public virtual ICollection<Borrowing> Borrowings { get; protected set; } = new HashSet<Borrowing>();
     }
 }

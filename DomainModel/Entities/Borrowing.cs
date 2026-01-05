@@ -40,7 +40,7 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the borrowed book copies.</summary>
         /// <value>A collection of <see cref="BookCopy"/> entities that were borrowed in this transaction.</value>
-        public virtual ICollection<BookCopy> BookCopies { get; set; } = new HashSet<BookCopy>();
+        public virtual ICollection<BookCopy> BookCopies { get; protected set; } = new HashSet<BookCopy>();
 
         /// <summary>Gets or sets the librarian who processed the loan.</summary>
         /// <value>The <see cref="Entities.Librarian"/> entity who processed this borrowing transaction.</value>
