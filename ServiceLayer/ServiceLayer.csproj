@@ -120,6 +120,11 @@
     <Compile Include="Services\BookTypeService.cs" />
     <Compile Include="Services\ConfigurationSettingService.cs" />
     <Compile Include="Validators\BookTypeValidator.cs" />
+    <Compile Include="Validators\BookValidator.cs" />
+    <Compile Include="Validators\BorrowingValidator.cs" />
+    <Compile Include="Validators\DomainValidator.cs" />
+    <Compile Include="Validators\EditionValidator.cs" />
+    <Compile Include="Validators\ReaderValidator.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
