@@ -14,11 +14,13 @@ namespace ServiceLayer.ServiceContracts
 
         // Reader Constants
         Task<int> GetMaxBooksInPeriodAsync(bool forLibrarian = false);
+        Task<int> GetMaxBooksInPeriodWindowDaysAsync();
         Task<TimeSpan> GetBorrowingPeriodAsync(bool forLibrarian = false);
         Task<int> GetMaxBooksPerBorrowingAsync(bool forLibrarian = false);
         Task<int> GetMaxBooksSameDomainAsync(bool forLibrarian = false);
-        Task<TimeSpan> GetSameDomainTimeLimitAsync();
-        Task<int> GetMaxOvertimeSumAsync(bool forLibrarian = false);
+        Task<int> GetSameDomainTimeLimitMonthsAsync();
+        Task<int> GetMaxOvertimeSumDaysAsync(bool forLibrarian = false);
+        Task<int> GetExtensionWindowMonthsAsync();
         Task<TimeSpan> GetSameBookDelayAsync(bool forLibrarian = false);
         Task<int> GetMaxBooksPerDayAsync();
 

@@ -26,15 +26,22 @@ namespace ServiceLayer.Services
             // Initialize default values using ConfigurationConstants
             _defaultValues = new ConcurrentDictionary<string, object>
             {
+                // Book Constants
                 [ConfigurationConstants.MaxDomainsPerBook] = ConfigurationConstants.DefaultMaxDomainsPerBook,
+
+                // Reader Constants
                 [ConfigurationConstants.MaxBooksInPeriod] = ConfigurationConstants.DefaultMaxBooksInPeriod,
+                [ConfigurationConstants.MaxBooksInPeriodWindowDays] = ConfigurationConstants.DefaultMaxBooksInPeriodWindowDays,
                 [ConfigurationConstants.BorrowingPeriodDays] = ConfigurationConstants.DefaultBorrowingPeriodDays,
                 [ConfigurationConstants.MaxBooksPerBorrowing] = ConfigurationConstants.DefaultMaxBooksPerBorrowing,
                 [ConfigurationConstants.MaxBooksSameDomain] = ConfigurationConstants.DefaultMaxBooksSameDomain,
-                [ConfigurationConstants.SameDomainTimeLimitDays] = ConfigurationConstants.DefaultSameDomainTimeLimitDays,
+                [ConfigurationConstants.SameDomainTimeLimitMonths] = ConfigurationConstants.DefaultSameDomainTimeLimitMonths,
                 [ConfigurationConstants.MaxOvertimeSumDays] = ConfigurationConstants.DefaultMaxOvertimeSumDays,
+                [ConfigurationConstants.ExtensionWindowMonths] = ConfigurationConstants.DefaultExtensionWindowMonths,
                 [ConfigurationConstants.SameBookDelayDays] = ConfigurationConstants.DefaultSameBookDelayDays,
                 [ConfigurationConstants.MaxBooksPerDay] = ConfigurationConstants.DefaultMaxBooksPerDay,
+
+                // Librarian Constants
                 [ConfigurationConstants.MaxBooksLentPerDay] = ConfigurationConstants.DefaultMaxBooksLentPerDay
             };
         }
@@ -80,6 +87,15 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
+        public async Task<int> GetMaxBooksInPeriodWindowDaysAsync()
+        {
+            return await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays, async () =>
+            {
+                return await _repository.GetIntValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays,
+                    (int)_defaultValues[ConfigurationConstants.MaxBooksInPeriodWindowDays]);
+            });
+        }
+
         public async Task<TimeSpan> GetBorrowingPeriodAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
@@ -114,17 +130,16 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
-        public async Task<TimeSpan> GetSameDomainTimeLimitAsync()
+        public async Task<int> GetSameDomainTimeLimitMonthsAsync()
         {
-            return await GetCachedValueAsync(ConfigurationConstants.SameDomainTimeLimitDays, async () =>
+            return await GetCachedValueAsync(ConfigurationConstants.SameDomainTimeLimitMonths, async () =>
             {
-                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.SameDomainTimeLimitDays,
-                    (double)_defaultValues[ConfigurationConstants.SameDomainTimeLimitDays]);
-                return TimeSpan.FromDays(days);
+                return await _repository.GetIntValueAsync(ConfigurationConstants.SameDomainTimeLimitMonths,
+                    (int)_defaultValues[ConfigurationConstants.SameDomainTimeLimitMonths]);
             });
         }
 
-        public async Task<int> GetMaxOvertimeSumAsync(bool forLibrarian = false)
+        public async Task<int> GetMaxOvertimeSumDaysAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxOvertimeSumDays, async () =>
             {
@@ -133,6 +148,15 @@ namespace ServiceLayer.Services
             });
 
             return forLibrarian ? baseValue * 2 : baseValue;
+        }
+
+        public async Task<int> GetExtensionWindowMonthsAsync()
+        {
+            return await GetCachedValueAsync(ConfigurationConstants.ExtensionWindowMonths, async () =>
+            {
+                return await _repository.GetIntValueAsync(ConfigurationConstants.ExtensionWindowMonths,
+                    (int)_defaultValues[ConfigurationConstants.ExtensionWindowMonths]);
+            });
         }
 
         public async Task<TimeSpan> GetSameBookDelayAsync(bool forLibrarian = false)
