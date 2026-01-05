@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
-    public class ConfigurationService : IConfigurationService
+    public class ConfigurationSettingService : IConfigurationSettingService
     {
         private readonly IConfigurationSettingRepository _repository;
         private readonly IMemoryCache _cache;
         private readonly ConcurrentDictionary<string, object> _defaultValues;
         private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(30);
 
-        public ConfigurationService(IConfigurationSettingRepository repository, IMemoryCache cache)
+        public ConfigurationSettingService(IConfigurationSettingRepository repository, IMemoryCache cache)
         {
             _repository = repository;
             _cache = cache;

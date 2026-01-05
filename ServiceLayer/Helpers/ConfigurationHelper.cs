@@ -9,74 +9,74 @@ namespace ServiceLayer.Helpers
 {
     public static class ConfigurationHelper
     {
-        private static IConfigurationService _configurationService;
+        private static IConfigurationSettingService _configurationSettingService;
 
-        public static void Initialize(IConfigurationService configurationService)
+        public static void Initialize(IConfigurationSettingService configurationService)
         {
-            _configurationService = configurationService;
+            _configurationSettingService = configurationService;
         }
 
         // Book Constants
         public static async Task<int> MaxDomainsPerBookAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxDomainsPerBookAsync();
+            return await _configurationSettingService.GetMaxDomainsPerBookAsync();
         }
 
         // Reader Constants
         public static async Task<int> MaxBooksInPeriodAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxBooksInPeriodAsync();
+            return await _configurationSettingService.GetMaxBooksInPeriodAsync();
         }
 
         public static async Task<TimeSpan> BorrowingPeriodAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetBorrowingPeriodAsync();
+            return await _configurationSettingService.GetBorrowingPeriodAsync();
         }
 
         public static async Task<int> MaxBooksPerBorrowingAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxBooksPerBorrowingAsync();
+            return await _configurationSettingService.GetMaxBooksPerBorrowingAsync();
         }
 
         public static async Task<int> MaxBooksSameDomainAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxBooksSameDomainAsync();
+            return await _configurationSettingService.GetMaxBooksSameDomainAsync();
         }
 
         public static async Task<TimeSpan> SameDomainTimeLimitAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetSameDomainTimeLimitAsync();
+            return await _configurationSettingService.GetSameDomainTimeLimitAsync();
         }
 
         public static async Task<int> MaxOvertimeSumAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxOvertimeSumAsync();
+            return await _configurationSettingService.GetMaxOvertimeSumAsync();
         }
 
         public static async Task<TimeSpan> SameBookDelayAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetSameBookDelayAsync();
+            return await _configurationSettingService.GetSameBookDelayAsync();
         }
 
         public static async Task<int> MaxBooksPerDayAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxBooksPerDayAsync();
+            return await _configurationSettingService.GetMaxBooksPerDayAsync();
         }
 
         // Librarian Constants
         public static async Task<int> MaxBooksLentPerDayAsync()
         {
             CheckInitialized();
-            return await _configurationService.GetMaxBooksLentPerDayAsync();
+            return await _configurationSettingService.GetMaxBooksLentPerDayAsync();
         }
 
         // Librarian-specific adjustments
@@ -120,7 +120,7 @@ namespace ServiceLayer.Helpers
 
         private static void CheckInitialized()
         {
-            if (_configurationService == null)
+            if (_configurationSettingService == null)
             {
                 throw new InvalidOperationException(
                     "ConfigurationHelper must be initialized before use. " +

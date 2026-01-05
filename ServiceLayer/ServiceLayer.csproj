@@ -114,12 +114,12 @@
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContracts\IBookTypeService.cs" />
-    <Compile Include="ServiceContracts\IConfigurationService.cs" />
+    <Compile Include="ServiceContracts\IConfigurationSettingService.cs" />
     <Compile Include="ServiceContracts\IService.cs" />
     <Compile Include="ServiceExtensions\ServiceCollectionExtensions.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\BookTypeService.cs" />
-    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\ConfigurationSettingService.cs" />
     <Compile Include="Validators\BookTypeValidator.cs" />
   </ItemGroup>
   <ItemGroup />

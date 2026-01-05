@@ -16,7 +16,7 @@ namespace ServiceLayer.ServiceExtensions
 
             // Register services
             services.AddScoped<IBookTypeService, BookTypeService>();
-            services.AddScoped<IConfigurationService, ConfigurationService>();
+            services.AddScoped<IConfigurationSettingService, ConfigurationSettingService>();
 
             return services;
         }

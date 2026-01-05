@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.ServiceContracts
 {
-    public interface IConfigurationService
+    public interface IConfigurationSettingService
     {
         // Book Constants
         Task<int> GetMaxDomainsPerBookAsync();
