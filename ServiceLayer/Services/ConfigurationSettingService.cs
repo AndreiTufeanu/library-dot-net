@@ -87,25 +87,25 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
-        public async Task<int> GetMaxBooksInPeriodWindowDaysAsync()
+        public async Task<int> GetMaxBooksInPeriodWindowDaysAsync(bool forLibrarian = false)
         {
-            return await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays, async () =>
+            var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays, async () =>
             {
                 return await _repository.GetIntValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays,
                     (int)_defaultValues[ConfigurationConstants.MaxBooksInPeriodWindowDays]);
             });
+
+            return forLibrarian ? baseValue / 2 : baseValue;
         }
 
-        public async Task<TimeSpan> GetBorrowingPeriodAsync(bool forLibrarian = false)
+        public async Task<TimeSpan> GetBorrowingPeriodAsync()
         {
-            var baseValue = await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
+            return await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
             {
                 var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.BorrowingPeriodDays,
                     (double)_defaultValues[ConfigurationConstants.BorrowingPeriodDays]);
                 return TimeSpan.FromDays(days);
             });
-
-            return forLibrarian ? TimeSpan.FromDays(baseValue.TotalDays / 2) : baseValue;
         }
 
         public async Task<int> GetMaxBooksPerBorrowingAsync(bool forLibrarian = false)
