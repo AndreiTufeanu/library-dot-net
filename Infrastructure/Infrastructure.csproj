@@ -121,6 +121,7 @@
     <Compile Include="Repositories\EditionRepository.cs" />
     <Compile Include="Repositories\LibrarianRepository.cs" />
     <Compile Include="Repositories\ReaderRepository.cs" />
+    <Compile Include="Repositories\UnitOfWork.cs" />
     <Compile Include="ServiceCollectionExtensionMethods\ServiceCollectionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
