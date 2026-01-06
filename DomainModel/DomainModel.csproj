@@ -77,6 +77,7 @@
     <Compile Include="RepositoryContracts\ILibrarianRepository.cs" />
     <Compile Include="RepositoryContracts\IReaderRepository.cs" />
     <Compile Include="RepositoryContracts\IRepository.cs" />
+    <Compile Include="RepositoryContracts\IUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
