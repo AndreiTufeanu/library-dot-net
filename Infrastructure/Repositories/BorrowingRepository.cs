@@ -16,17 +16,24 @@ namespace Infrastructure.Repositories
 
         public BorrowingRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Borrowing> GetByIdAsync(Guid id)
         {
-            return await _context.Borrowings.FindAsync(id);
+            return await _context.Borrowings
+                .Include(b => b.Reader)
+                .Include(b => b.Librarian)
+                .Include(b => b.BookCopies.Select(bc => bc.Edition.Book.Domains))
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<IEnumerable<Borrowing>> GetAllAsync()
         {
-            return await _context.Borrowings.ToListAsync();
+            return await _context.Borrowings
+                .Include(b => b.Reader)
+                .Include(b => b.Librarian)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +43,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Borrowing> AddAsync(Borrowing entity)
         {
-            var addedEntity = _context.Borrowings.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Borrowings.Add(entity));
         }
 
         public async Task<Borrowing> UpdateAsync(Borrowing entity)
@@ -48,7 +53,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,20 +63,22 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Borrowings.Remove(borrowing);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<Borrowing>> GetActiveByReaderAsync(Guid readerId)
         {
             return await _context.Borrowings
+                .Include(b => b.BookCopies.Select(bc => bc.Edition.Book))
                 .Where(b => b.Reader.Id == readerId && b.ReturnDate == null)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Borrowing>> GetByReaderAsync(Guid readerId, DateTime? startDate = null, DateTime? endDate = null)
         {
-            var query = _context.Borrowings.Where(b => b.Reader.Id == readerId);
+            var query = _context.Borrowings
+                .Include(b => b.BookCopies.Select(bc => bc.Edition.Book.Domains))
+                .Where(b => b.Reader.Id == readerId);
 
             if (startDate.HasValue)
                 query = query.Where(b => b.BorrowDate >= startDate.Value);
@@ -85,7 +91,8 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Borrowing>> GetByLibrarianAsync(Guid librarianId, DateTime? startDate = null, DateTime? endDate = null)
         {
-            var query = _context.Borrowings.Where(b => b.Librarian.Id == librarianId);
+            var query = _context.Borrowings
+                .Where(b => b.Librarian.Id == librarianId);
 
             if (startDate.HasValue)
                 query = query.Where(b => b.BorrowDate >= startDate.Value);
@@ -100,6 +107,8 @@ namespace Infrastructure.Repositories
         {
             var now = DateTime.Now;
             return await _context.Borrowings
+                .Include(b => b.Reader)
+                .Include(b => b.BookCopies.Select(bc => bc.Edition.Book))
                 .Where(b => b.ReturnDate == null && b.DueDate < now)
                 .ToListAsync();
         }
@@ -107,6 +116,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Borrowing>> GetByBookCopyAsync(Guid bookCopyId)
         {
             return await _context.Borrowings
+                .Include(b => b.Reader)
+                .Include(b => b.Librarian)
                 .Where(b => b.BookCopies.Any(bc => bc.Id == bookCopyId))
                 .ToListAsync();
         }
@@ -114,6 +125,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Borrowing>> GetByBookAsync(Guid bookId)
         {
             return await _context.Borrowings
+                .Include(b => b.Reader)
+                .Include(b => b.Librarian)
                 .Where(b => b.BookCopies.Any(bc => bc.Edition.Book.Id == bookId))
                 .ToListAsync();
         }
@@ -135,9 +148,7 @@ namespace Infrastructure.Repositories
         {
             return await _context.Borrowings
                 .Where(b => b.Reader.Id == readerId && b.BorrowDate >= startDate)
-                .SelectMany(b => b.BookCopies)
-                .Select(bc => bc.Edition.Book)
-                .Where(book => book.Domains.Any(d => d.Id == domainId))
+                .Where(b => b.BookCopies.Any(bc => bc.Edition.Book.Domains.Any(d => d.Id == domainId)))
                 .CountAsync();
         }
 
@@ -178,6 +189,18 @@ namespace Infrastructure.Repositories
             return await _context.Borrowings
                 .Where(b => b.Librarian.Id == librarianId &&
                            b.BorrowDate >= startOfDay && b.BorrowDate <= endOfDay)
+                .CountAsync();
+        }
+
+        public async Task<int> GetCountByReaderAndDomainsInPeriodAsync(
+            Guid readerId,
+            List<Guid> domainIds,
+            DateTime startDate)
+        {
+            return await _context.Borrowings
+                .Where(b => b.Reader.Id == readerId && b.BorrowDate >= startDate)
+                .Where(b => b.BookCopies.Any(bc =>
+                    bc.Edition.Book.Domains.Any(d => domainIds.Contains(d.Id))))
                 .CountAsync();
         }
     }

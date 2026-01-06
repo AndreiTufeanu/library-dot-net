@@ -16,17 +16,22 @@ namespace Infrastructure.Repositories
 
         public LibrarianRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Librarian> GetByIdAsync(Guid id)
         {
-            return await _context.Librarians.FindAsync(id);
+            return await _context.Librarians
+                .Include(l => l.ReaderDetails)
+                .Include(l => l.ProcessedLoans)
+                .FirstOrDefaultAsync(l => l.Id == id);
         }
 
         public async Task<IEnumerable<Librarian>> GetAllAsync()
         {
-            return await _context.Librarians.ToListAsync();
+            return await _context.Librarians
+                .Include(l => l.ReaderDetails)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +41,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Librarian> AddAsync(Librarian entity)
         {
-            var addedEntity = _context.Librarians.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Librarians.Add(entity));
         }
 
         public async Task<Librarian> UpdateAsync(Librarian entity)
@@ -48,7 +51,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,13 +61,13 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Librarians.Remove(librarian);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<Librarian> GetByReaderIdAsync(Guid readerId)
         {
             return await _context.Librarians
+                .Include(l => l.ReaderDetails)
                 .FirstOrDefaultAsync(l => l.ReaderDetails != null && l.ReaderDetails.Id == readerId);
         }
 

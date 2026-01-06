@@ -16,17 +16,20 @@ namespace Infrastructure.Repositories
 
         public BookTypeRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<BookType> GetByIdAsync(Guid id)
         {
-            return await _context.BookTypes.FindAsync(id);
+            return await _context.BookTypes
+                .Include(bt => bt.Editions)
+                .FirstOrDefaultAsync(bt => bt.Id == id);
         }
 
         public async Task<IEnumerable<BookType>> GetAllAsync()
         {
-            return await _context.BookTypes.ToListAsync();
+            return await _context.BookTypes
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -43,18 +46,16 @@ namespace Infrastructure.Repositories
         public async Task<BookType> AddAsync(BookType entity)
         {
             var addedEntity = _context.BookTypes.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(addedEntity);
         }
 
         public async Task<BookType> UpdateAsync(BookType entity)
         {
             var existingEntity = await _context.BookTypes.FindAsync(entity.Id);
             if (existingEntity == null)
-                throw new ArgumentException($"BookType with ID {entity.Id} not found");
+                return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -65,7 +66,6 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.BookTypes.Remove(bookType);
-            await _context.SaveChangesAsync();
             return true;
         }
 

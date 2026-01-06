@@ -16,17 +16,24 @@ namespace Infrastructure.Repositories
 
         public BookRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
-            return await _context.Books.FindAsync(id);
+            return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Domains)
+                .Include(b => b.Editions.Select(e => e.BookCopies))
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Domains)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +43,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Book> AddAsync(Book entity)
         {
-            var addedEntity = _context.Books.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Books.Add(entity));
         }
 
         public async Task<Book> UpdateAsync(Book entity)
@@ -48,7 +53,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,13 +63,14 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<Book>> FindByTitleAsync(string title)
         {
             return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Domains)
                 .Where(b => b.Title.ToLower().Contains(title.ToLower()))
                 .ToListAsync();
         }
@@ -73,6 +78,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Book>> FindByDomainAsync(Guid domainId)
         {
             return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Domains)
                 .Where(b => b.Domains.Any(d => d.Id == domainId))
                 .ToListAsync();
         }
@@ -80,15 +87,19 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Book>> FindByAuthorAsync(Guid authorId)
         {
             return await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Domains)
                 .Where(b => b.Authors.Any(a => a.Id == authorId))
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Book>> GetAvailableForBorrowingAsync()
         {
-            return await _context.Books
-                .Where(b => b.IsAvailableForBorrowing())
+            var books = await _context.Books
+                .Include(b => b.Editions.Select(e => e.BookCopies))
                 .ToListAsync();
+
+            return books.Where(b => b.IsAvailableForBorrowing()).ToList();
         }
 
         public async Task<bool> HasPhysicalCopiesAsync(Guid id)

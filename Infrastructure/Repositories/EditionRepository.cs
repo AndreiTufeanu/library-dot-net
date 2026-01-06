@@ -16,17 +16,24 @@ namespace Infrastructure.Repositories
 
         public EditionRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Edition> GetByIdAsync(Guid id)
         {
-            return await _context.Editions.FindAsync(id);
+            return await _context.Editions
+                .Include(e => e.Book)
+                .Include(e => e.BookType)
+                .Include(e => e.BookCopies)
+                .FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<IEnumerable<Edition>> GetAllAsync()
         {
-            return await _context.Editions.ToListAsync();
+            return await _context.Editions
+                .Include(e => e.Book)
+                .Include(e => e.BookType)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +43,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Edition> AddAsync(Edition entity)
         {
-            var addedEntity = _context.Editions.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Editions.Add(entity));
         }
 
         public async Task<Edition> UpdateAsync(Edition entity)
@@ -48,7 +53,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,13 +63,14 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Editions.Remove(edition);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<Edition>> GetByBookAsync(Guid bookId)
         {
             return await _context.Editions
+                .Include(e => e.Book)
+                .Include(e => e.BookType)
                 .Where(e => e.Book.Id == bookId)
                 .ToListAsync();
         }
@@ -73,6 +78,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Edition>> GetByBookTypeAsync(Guid bookTypeId)
         {
             return await _context.Editions
+                .Include(e => e.Book)
+                .Include(e => e.BookType)
                 .Where(e => e.BookType.Id == bookTypeId)
                 .ToListAsync();
         }
@@ -80,6 +87,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Edition>> GetPublishedBetweenAsync(DateTime startDate, DateTime endDate)
         {
             return await _context.Editions
+                .Include(e => e.Book)
+                .Include(e => e.BookType)
                 .Where(e => e.PublicationDate >= startDate && e.PublicationDate <= endDate)
                 .ToListAsync();
         }

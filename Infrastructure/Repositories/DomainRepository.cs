@@ -16,17 +16,23 @@ namespace Infrastructure.Repositories
 
         public DomainRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Domain> GetByIdAsync(Guid id)
         {
-            return await _context.Domains.FindAsync(id);
+            return await _context.Domains
+                .Include(d => d.ParentDomain)
+                .Include(d => d.Subdomains)
+                .Include(d => d.Books)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<IEnumerable<Domain>> GetAllAsync()
         {
-            return await _context.Domains.ToListAsync();
+            return await _context.Domains
+                .Include(d => d.ParentDomain)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +42,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Domain> AddAsync(Domain entity)
         {
-            var addedEntity = _context.Domains.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Domains.Add(entity));
         }
 
         public async Task<Domain> UpdateAsync(Domain entity)
@@ -48,7 +52,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,19 +62,21 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Domains.Remove(domain);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<Domain> FindByNameAsync(string name)
         {
             return await _context.Domains
+                .Include(d => d.ParentDomain)
+                .Include(d => d.Subdomains)
                 .FirstOrDefaultAsync(d => d.Name.ToLower() == name.ToLower());
         }
 
         public async Task<IEnumerable<Domain>> GetRootDomainsAsync()
         {
             return await _context.Domains
+                .Include(d => d.Subdomains)
                 .Where(d => d.ParentDomain == null)
                 .ToListAsync();
         }
@@ -79,6 +84,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Domain>> GetSubdomainsAsync(Guid parentDomainId)
         {
             return await _context.Domains
+                .Include(d => d.Subdomains)
                 .Where(d => d.ParentDomain != null && d.ParentDomain.Id == parentDomainId)
                 .ToListAsync();
         }

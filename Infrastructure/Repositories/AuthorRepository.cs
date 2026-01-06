@@ -16,17 +16,21 @@ namespace Infrastructure.Repositories
 
         public AuthorRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Author> GetByIdAsync(Guid id)
         {
-            return await _context.Authors.FindAsync(id);
+            return await _context.Authors
+                .Include(a => a.Books)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<Author>> GetAllAsync()
         {
-            return await _context.Authors.ToListAsync();
+            return await _context.Authors
+                .Include(a => a.Books)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +40,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Author> AddAsync(Author entity)
         {
-            var addedEntity = _context.Authors.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Authors.Add(entity));
         }
 
         public async Task<Author> UpdateAsync(Author entity)
@@ -48,7 +50,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,7 +60,6 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
             return true;
         }
 

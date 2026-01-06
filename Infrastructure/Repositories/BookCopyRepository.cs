@@ -16,17 +16,22 @@ namespace Infrastructure.Repositories
 
         public BookCopyRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<BookCopy> GetByIdAsync(Guid id)
         {
-            return await _context.BookCopies.FindAsync(id);
+            return await _context.BookCopies
+                .Include(bc => bc.Edition.Book)
+                .Include(bc => bc.Borrowings)
+                .FirstOrDefaultAsync(bc => bc.Id == id);
         }
 
         public async Task<IEnumerable<BookCopy>> GetAllAsync()
         {
-            return await _context.BookCopies.ToListAsync();
+            return await _context.BookCopies
+                .Include(bc => bc.Edition.Book)
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +41,7 @@ namespace Infrastructure.Repositories
 
         public async Task<BookCopy> AddAsync(BookCopy entity)
         {
-            var addedEntity = _context.BookCopies.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.BookCopies.Add(entity));
         }
 
         public async Task<BookCopy> UpdateAsync(BookCopy entity)
@@ -48,7 +51,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,13 +61,13 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.BookCopies.Remove(bookCopy);
-            await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<BookCopy>> GetBorrowableCopiesByBookAsync(Guid bookId)
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition.Book)
                 .Where(bc => bc.Edition.Book.Id == bookId && bc.IsBorrowable())
                 .ToListAsync();
         }
@@ -73,6 +75,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<BookCopy>> GetBorrowableCopiesByEditionAsync(Guid editionId)
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition)
                 .Where(bc => bc.Edition.Id == editionId && bc.IsBorrowable())
                 .ToListAsync();
         }
@@ -80,6 +83,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<BookCopy>> GetByBookAsync(Guid bookId)
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition)
                 .Where(bc => bc.Edition.Book.Id == bookId)
                 .ToListAsync();
         }
@@ -87,6 +91,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<BookCopy>> GetByEditionAsync(Guid editionId)
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition)
                 .Where(bc => bc.Edition.Id == editionId)
                 .ToListAsync();
         }
@@ -94,6 +99,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<BookCopy>> GetAvailableCopiesAsync()
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition.Book)
                 .Where(bc => bc.IsAvailable)
                 .ToListAsync();
         }
@@ -101,6 +107,7 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<BookCopy>> GetLectureRoomOnlyCopiesAsync()
         {
             return await _context.BookCopies
+                .Include(bc => bc.Edition.Book)
                 .Where(bc => bc.IsLectureRoomOnly)
                 .ToListAsync();
         }

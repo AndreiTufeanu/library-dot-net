@@ -16,17 +16,21 @@ namespace Infrastructure.Repositories
 
         public ReaderRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Reader> GetByIdAsync(Guid id)
         {
-            return await _context.Readers.FindAsync(id);
+            return await _context.Readers
+                .Include(r => r.Borrowings)
+                .Include(r => r.LibrarianAccount)
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<IEnumerable<Reader>> GetAllAsync()
         {
-            return await _context.Readers.ToListAsync();
+            return await _context.Readers
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Guid id)
@@ -36,9 +40,7 @@ namespace Infrastructure.Repositories
 
         public async Task<Reader> AddAsync(Reader entity)
         {
-            var addedEntity = _context.Readers.Add(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity;
+            return await Task.FromResult(_context.Readers.Add(entity));
         }
 
         public async Task<Reader> UpdateAsync(Reader entity)
@@ -48,7 +50,6 @@ namespace Infrastructure.Repositories
                 return null;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
@@ -59,7 +60,6 @@ namespace Infrastructure.Repositories
                 return false;
 
             _context.Readers.Remove(reader);
-            await _context.SaveChangesAsync();
             return true;
         }
 
