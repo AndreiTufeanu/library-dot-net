@@ -16,16 +16,16 @@ namespace ServiceLayer.Services
 {
     public class BookTypeService : BaseService, IBookTypeService
     {
-        private readonly IBookTypeRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<BookType> _validator;
 
         public BookTypeService(
-            IBookTypeRepository repository,
+            IUnitOfWork unitOfWork,
             IValidator<BookType> validator,
             ILogger<BookTypeService> logger)
             : base(logger)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _validator = validator;
         }
 
@@ -35,13 +35,16 @@ namespace ServiceLayer.Services
             {
                 ValidationHelper.Validate(bookType, _validator);
 
-                var existingBookType = await _repository.FindByNameAsync(bookType.Name);
+                var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null)
                 {
                     throw new Exceptions.ValidationException($"A book type with the name '{bookType.Name}' already exists.");
                 }
 
-                return await _repository.AddAsync(bookType);
+                var addedBookType = await _unitOfWork.BookTypes.AddAsync(bookType);
+                await _unitOfWork.SaveChangesAsync();
+
+                return addedBookType;
 
             }, nameof(CreateAsync));
         }
@@ -50,7 +53,7 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                var bookType = await _repository.GetByIdAsync(id);
+                var bookType = await _unitOfWork.BookTypes.GetByIdAsync(id);
                 if (bookType == null)
                 {
                     throw new NotFoundException(nameof(BookType), id);
@@ -64,7 +67,7 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                return await _repository.GetAllAsync();
+                return await _unitOfWork.BookTypes.GetAllAsync();
 
             }, nameof(GetAllAsync));
         }
@@ -73,20 +76,21 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                if (!await _repository.ExistsAsync(bookType.Id))
+                if (!await _unitOfWork.BookTypes.ExistsAsync(bookType.Id))
                 {
                     throw new NotFoundException(nameof(BookType), bookType.Id);
                 }
 
                 ValidationHelper.Validate(bookType, _validator);
 
-                var existingBookType = await _repository.FindByNameAsync(bookType.Name);
+                var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null && existingBookType.Id != bookType.Id)
                 {
                     throw new Exceptions.ValidationException($"Another book type with the name '{bookType.Name}' already exists.");
                 }
 
-                await _repository.UpdateAsync(bookType);
+                await _unitOfWork.BookTypes.UpdateAsync(bookType);
+                await _unitOfWork.SaveChangesAsync();
                 return true;
 
             }, nameof(UpdateAsync));
@@ -96,18 +100,35 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                var bookType = await _repository.GetByIdAsync(id);
+                var bookType = await _unitOfWork.BookTypes.GetByIdAsync(id);
                 if (bookType == null)
                 {
                     throw new NotFoundException(nameof(BookType), id);
                 }
 
-                if (await _repository.HasEditionsAsync(id))
+                if (await _unitOfWork.BookTypes.HasEditionsAsync(id))
                 {
                     throw new BusinessRuleException("Cannot delete a book type that has associated editions.");
                 }
 
-                return await _repository.DeleteAsync(id);
+                await _unitOfWork.BeginTransactionAsync();
+                try
+                {
+                    var success = await _unitOfWork.BookTypes.DeleteAsync(id);
+                    if (!success)
+                    {
+                        throw new InvalidOperationException("Failed to delete book type");
+                    }
+
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackAsync();
+                    throw;
+                }
 
             }, nameof(DeleteAsync));
         }
@@ -116,7 +137,7 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                return await _repository.ExistsAsync(id);
+                return await _unitOfWork.BookTypes.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
         }
