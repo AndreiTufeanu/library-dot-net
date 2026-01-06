@@ -160,5 +160,103 @@ namespace DomainModel.Entities
                 .SelectMany(e => e.BookCopies)
                 .FirstOrDefault(copy => copy.IsBorrowable());
         }
+
+        /// <summary>
+        /// Gets all domains this book belongs to, including implicit ancestor domains.
+        /// This includes both explicitly assigned domains and all their ancestors.
+        /// </summary>
+        public IEnumerable<Domain> GetAllDomainsIncludingAncestors()
+        {
+            var allDomains = new HashSet<Domain>();
+
+            if (Domains == null)
+                return allDomains;
+
+            foreach (var domain in Domains)
+            {
+                allDomains.Add(domain);
+
+                var current = domain.ParentDomain;
+                while (current != null)
+                {
+                    allDomains.Add(current);
+                    current = current.ParentDomain;
+                }
+            }
+
+            return allDomains;
+        }
+
+        /// <summary>
+        /// Gets all domain IDs including implicit ancestor domains.
+        /// </summary>
+        public IEnumerable<Guid> GetAllDomainIdsIncludingAncestors()
+        {
+            var allDomainIds = new HashSet<Guid>();
+
+            if (Domains == null)
+                return allDomainIds;
+
+            foreach (var domain in Domains)
+            {
+                allDomainIds.Add(domain.Id);
+
+                var current = domain.ParentDomain;
+                while (current != null)
+                {
+                    allDomainIds.Add(current.Id);
+                    current = current.ParentDomain;
+                }
+            }
+
+            return allDomainIds;
+        }
+
+        /// <summary>
+        /// Gets all domain IDs in the complete hierarchy (explicit domains + ancestors + descendants).
+        /// </summary>
+        /// <param name="getDescendants">Whether to include descendant domains (subdomains).</param>
+        /// <returns>All domain IDs in the hierarchy.</returns>
+        public async Task<IEnumerable<Guid>> GetCompleteDomainHierarchyIdsAsync(
+            Func<Guid, Task<IEnumerable<Domain>>> getSubdomainsAsync = null,
+            bool includeDescendants = true)
+        {
+            var allDomainIds = new HashSet<Guid>();
+
+            if (Domains == null)
+                return allDomainIds;
+
+            foreach (var domain in Domains)
+            {
+                allDomainIds.Add(domain.Id);
+
+                var current = domain.ParentDomain;
+                while (current != null)
+                {
+                    allDomainIds.Add(current.Id);
+                    current = current.ParentDomain;
+                }
+
+                if (includeDescendants && getSubdomainsAsync != null)
+                {
+                    await AddDescendantDomainIdsAsync(domain.Id, allDomainIds, getSubdomainsAsync);
+                }
+            }
+
+            return allDomainIds;
+        }
+
+        private async Task AddDescendantDomainIdsAsync(
+            Guid domainId,
+            HashSet<Guid> domainIds,
+            Func<Guid, Task<IEnumerable<Domain>>> getSubdomainsAsync)
+        {
+            var subdomains = await getSubdomainsAsync(domainId);
+            foreach (var subdomain in subdomains)
+            {
+                domainIds.Add(subdomain.Id);
+                await AddDescendantDomainIdsAsync(subdomain.Id, domainIds, getSubdomainsAsync);
+            }
+        }
     }
 }
