@@ -13,6 +13,10 @@ namespace ServiceLayer.Validators
     {
         public BookValidator()
         {
+            RuleFor(x => x.Domains)
+                .NotEmpty()
+                .WithMessage("Book must belong to at least one domain.");
+
             // Prevent ancestor-descendant relationships in domain assignments
             RuleFor(x => x.Domains)
                 .Must(HaveValidDomainRelationships)
