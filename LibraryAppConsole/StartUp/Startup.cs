@@ -1,10 +1,10 @@
 ﻿using Infrastructure.ApplicationContext;
-using Infrastructure.ServiceCollectionExtensionMethods;
+using Infrastructure.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using ServiceLayer.ServiceCollectionExtensionMethods;
+using ServiceLayer.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

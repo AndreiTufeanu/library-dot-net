@@ -7,7 +7,7 @@ using ServiceLayer.Services;
 using ServiceLayer.Services.HelperServices;
 using ServiceLayer.Validators;
 
-namespace ServiceLayer.ServiceCollectionExtensionMethods
+namespace ServiceLayer.Extensions
 {
     public static class ServiceCollectionExtensions
     {
