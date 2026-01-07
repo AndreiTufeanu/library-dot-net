@@ -14,7 +14,7 @@ namespace DomainModel.RepositoryContracts
         /// Gets an entity by its identifier
         /// </summary>
         /// <param name="id">The entity identifier</param>
-        /// <returns>The entity if found, otherwise null</returns>
+        /// <returns>The entity if found; otherwise, null</returns>
         Task<TEntity> GetByIdAsync(Guid id);
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace DomainModel.RepositoryContracts
         /// Checks if an entity exists by its identifier
         /// </summary>
         /// <param name="id">The entity identifier</param>
-        /// <returns>True if the entity exists, otherwise false</returns>
+        /// <returns>True if the entity exists; otherwise, false</returns>
         Task<bool> ExistsAsync(Guid id);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace DomainModel.RepositoryContracts
         /// Deletes an entity by its identifier
         /// </summary>
         /// <param name="id">The entity identifier</param>
-        /// <returns>True if deletion was successful, otherwise false</returns>
+        /// <returns>True if deletion was successful; otherwise, false</returns>
         Task<bool> DeleteAsync(Guid id);
     }
 }
