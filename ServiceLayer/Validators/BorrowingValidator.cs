@@ -35,10 +35,28 @@ namespace ServiceLayer.Validators
                 .NotEmpty()
                 .WithMessage("At least one book copy must be borrowed.");
 
+            RuleFor(x => x.BookCopies)
+                .Must(HaveDistinctBookTitles)
+                .WithMessage("Cannot borrow multiple copies/editions of the same book title in one transaction.");
+
             // If borrowing 3+ books, must have at least 2 distinct domains
             RuleFor(x => x.BookCopies)
                 .Must(HaveSufficientDomainDiversity)
                 .WithMessage("When borrowing 3 or more books, they must belong to at least 2 distinct domains.");
+        }
+
+        private bool HaveDistinctBookTitles(ICollection<BookCopy> bookCopies)
+        {
+            if (bookCopies == null || bookCopies.Count <= 1)
+                return true;
+
+            var distinctBookCount = bookCopies
+                .Select(bc => bc.Edition?.Book?.Id)
+                .Where(id => id.HasValue)
+                .Distinct()
+                .Count();
+
+            return distinctBookCount == bookCopies.Count;
         }
 
         private bool HaveSufficientDomainDiversity(ICollection<BookCopy> bookCopies)

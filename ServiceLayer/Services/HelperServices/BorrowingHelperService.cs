@@ -67,7 +67,13 @@ namespace ServiceLayer.Services.HelperServices
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
             var maxBooksPerBorrowing = await _configService.GetMaxBooksPerBorrowingAsync(isLibrarianReader);
 
-            if (borrowing.BookCopies.Count > maxBooksPerBorrowing)
+            var distinctBookCount = borrowing.BookCopies
+                                        .Select(bc => bc.Edition?.Book?.Id)
+                                        .Where(id => id.HasValue)
+                                        .Distinct()
+                                        .Count();
+
+            if (distinctBookCount > maxBooksPerBorrowing)
             {
                 throw new Exceptions.ValidationException($"Cannot borrow more than {maxBooksPerBorrowing} books in one transaction.");
             }
