@@ -1,0 +1,36 @@
+﻿using AutoFixture;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TestDomainModel.UnitTests.Entities
+{
+    [TestClass]
+    public abstract class EntityTestBase<T> where T : class
+    {
+        protected readonly Fixture _fixture;
+
+        protected EntityTestBase()
+        {
+            _fixture = new Fixture();
+            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+            // Customize string generation to meet validation requirements
+            _fixture.Customize<string>(c => c.FromFactory(() =>
+                string.Join("", _fixture.CreateMany<char>(10).Select(ch => char.IsLetter(ch) ? ch : 'a'))));
+        }
+
+        protected ValidationResult[] ValidateEntity(T entity)
+        {
+            var validationContext = new ValidationContext(entity);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(entity, validationContext, validationResults, true);
+            return validationResults.ToArray();
+        }
+    }
+}
