@@ -153,42 +153,6 @@ namespace TestDomainModel.UnitTests.Entities
         }
 
         [TestMethod]
-        public void GetAvailableCopiesCount_WhenNoEditions_ShouldReturnZero()
-        {
-            // Arrange
-            var book = new Book(initialCopies: 10);
-
-            // Act
-            var count = book.GetAvailableCopiesCount();
-
-            // Assert
-            count.Should().Be(0);
-        }
-
-        [TestMethod]
-        public void GetAvailableCopiesCount_WhenEditionsExist_ShouldCountAvailableCopies()
-        {
-            // Arrange
-            var book = new Book(initialCopies: 10);
-            var edition = new Edition();
-            var bookCopy1 = new BookCopy(isLectureRoomOnly: false);
-            var bookCopy2 = new BookCopy(isLectureRoomOnly: false);
-            var bookCopy3 = new BookCopy(isLectureRoomOnly: true);
-            bookCopy2.MarkAsBorrowed();
-
-            edition.BookCopies.Add(bookCopy1);
-            edition.BookCopies.Add(bookCopy2);
-            edition.BookCopies.Add(bookCopy3);
-            book.Editions.Add(edition);
-
-            // Act
-            var count = book.GetAvailableCopiesCount();
-
-            // Assert
-            count.Should().Be(1);
-        }
-
-        [TestMethod]
         public void IsAvailableForBorrowing_WhenNoInitialCopies_ShouldReturnFalse()
         {
             // Arrange

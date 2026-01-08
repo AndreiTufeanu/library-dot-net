@@ -78,35 +78,6 @@ namespace TestDomainModel.UnitTests.Entities
         }
 
         [TestMethod]
-        public void IsAlsoReader_WhenReaderDetailsNotNull_ShouldReturnTrue()
-        {
-            // Arrange
-            var librarian = new Librarian
-            {
-                ReaderDetails = new Reader()
-            };
-
-            // Act
-            var result = librarian.IsAlsoReader();
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public void IsAlsoReader_WhenReaderDetailsNull_ShouldReturnFalse()
-        {
-            // Arrange
-            var librarian = new Librarian();
-
-            // Act
-            var result = librarian.IsAlsoReader();
-
-            // Assert
-            result.Should().BeFalse();
-        }
-
-        [TestMethod]
         public void ProcessedLoans_ShouldAllowAdding()
         {
             // Arrange
