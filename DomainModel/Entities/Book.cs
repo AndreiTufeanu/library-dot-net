@@ -62,7 +62,7 @@ namespace DomainModel.Entities
         /// This property has a private setter and can only be initialized via the constructor
         /// or the <see cref="SetInitialCopies(int)"/> method. Once set, it cannot be modified.
         /// </remarks>
-        [Range(1, int.MaxValue, ErrorMessage = "InitialCopies must be at least 1.")]
+        [Range(1, int.MaxValue, ErrorMessage = "InitialCopies must be at least {1}.")]
         public int InitialCopies { get; private set; }
 
         /// <summary>Gets or sets the collection of authors who wrote this book.</summary>
@@ -102,10 +102,10 @@ namespace DomainModel.Entities
         /// This method can only be called once, typically during object construction.
         /// The <see cref="InitialCopies"/> property cannot be modified after the initial value is set.
         /// </remarks>
-        public void SetInitialCopies(int copies)
+        private void SetInitialCopies(int copies)
         {
-            if (InitialCopies != 0)
-                throw new InvalidOperationException("InitialCopies can only be set once.");
+            if (copies < 1)
+                throw new ArgumentOutOfRangeException(nameof(copies), "InitialCopies must be at least 1."); 
 
             InitialCopies = copies;
         }
@@ -126,17 +126,6 @@ namespace DomainModel.Entities
         }
 
         /// <summary>
-        /// Gets the current number of physical copies (total across all editions).
-        /// </summary>
-        /// <returns>The total number of physical copies.</returns>
-        public int GetTotalPhysicalCopiesCount()
-        {
-            return Editions?
-                .SelectMany(e => e.BookCopies)
-                .Count() ?? 0;
-        }
-
-        /// <summary>
         /// Determines whether the book can be borrowed according to business rules.
         /// </summary>
         /// <returns>
@@ -154,128 +143,6 @@ namespace DomainModel.Entities
                 .Any(bc => !bc.IsLectureRoomOnly) ?? false;
 
             return hasNonLectureCopies && availableCopies >= (InitialCopies * BorrowableThresholdPercentage);
-        }
-
-        /// <summary>
-        /// Gets the first available borrowable copy from any edition of this book.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="BookCopy"/> that is available for borrowing, or <c>null</c> 
-        /// if no borrowable copies are currently available or if the book is not 
-        /// available for borrowing according to business rules.
-        /// </returns>
-        /// <remarks>
-        /// This method first checks if the book is available for borrowing (using 
-        /// <see cref="IsAvailableForBorrowing"/>). If the book is borrowable, it 
-        /// searches across all editions and their copies to find one that is 
-        /// available and not restricted to lecture room use.
-        /// </remarks>
-        public BookCopy GetAvailableBorrowableCopy()
-        {
-            if (!IsAvailableForBorrowing())
-                return null;
-
-            return Editions?
-                .SelectMany(e => e.BookCopies)
-                .FirstOrDefault(copy => copy.IsBorrowable());
-        }
-
-        /// <summary>
-        /// Gets all domains this book belongs to, including implicit ancestor domains.
-        /// This includes both explicitly assigned domains and all their ancestors.
-        /// </summary>
-        public IEnumerable<Domain> GetAllDomainsIncludingAncestors()
-        {
-            var allDomains = new HashSet<Domain>();
-
-            if (Domains == null)
-                return allDomains;
-
-            foreach (var domain in Domains)
-            {
-                allDomains.Add(domain);
-
-                var current = domain.ParentDomain;
-                while (current != null)
-                {
-                    allDomains.Add(current);
-                    current = current.ParentDomain;
-                }
-            }
-
-            return allDomains;
-        }
-
-        /// <summary>
-        /// Gets all domain IDs including implicit ancestor domains.
-        /// </summary>
-        public IEnumerable<Guid> GetAllDomainIdsIncludingAncestors()
-        {
-            var allDomainIds = new HashSet<Guid>();
-
-            if (Domains == null)
-                return allDomainIds;
-
-            foreach (var domain in Domains)
-            {
-                allDomainIds.Add(domain.Id);
-
-                var current = domain.ParentDomain;
-                while (current != null)
-                {
-                    allDomainIds.Add(current.Id);
-                    current = current.ParentDomain;
-                }
-            }
-
-            return allDomainIds;
-        }
-
-        /// <summary>
-        /// Gets all domain IDs in the complete hierarchy (explicit domains + ancestors + descendants).
-        /// </summary>
-        /// <param name="getDescendants">Whether to include descendant domains (subdomains).</param>
-        /// <returns>All domain IDs in the hierarchy.</returns>
-        public async Task<IEnumerable<Guid>> GetCompleteDomainHierarchyIdsAsync(
-            Func<Guid, Task<IEnumerable<Domain>>> getSubdomainsAsync = null,
-            bool includeDescendants = true)
-        {
-            var allDomainIds = new HashSet<Guid>();
-
-            if (Domains == null)
-                return allDomainIds;
-
-            foreach (var domain in Domains)
-            {
-                allDomainIds.Add(domain.Id);
-
-                var current = domain.ParentDomain;
-                while (current != null)
-                {
-                    allDomainIds.Add(current.Id);
-                    current = current.ParentDomain;
-                }
-
-                if (includeDescendants && getSubdomainsAsync != null)
-                {
-                    await AddDescendantDomainIdsAsync(domain.Id, allDomainIds, getSubdomainsAsync);
-                }
-            }
-
-            return allDomainIds;
-        }
-
-        private async Task AddDescendantDomainIdsAsync(
-            Guid domainId,
-            HashSet<Guid> domainIds,
-            Func<Guid, Task<IEnumerable<Domain>>> getSubdomainsAsync)
-        {
-            var subdomains = await getSubdomainsAsync(domainId);
-            foreach (var subdomain in subdomains)
-            {
-                domainIds.Add(subdomain.Id);
-                await AddDescendantDomainIdsAsync(subdomain.Id, domainIds, getSubdomainsAsync);
-            }
         }
     }
 }
