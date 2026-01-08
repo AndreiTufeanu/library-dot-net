@@ -53,40 +53,6 @@ namespace DomainModel.Entities
         public virtual Librarian Librarian { get; set; }
 
         /// <summary>
-        /// Determines whether this borrowing transaction is currently active.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the book copies have not been returned yet; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// A borrowing is considered active if it has no return date recorded.
-        /// This is used to determine if books are currently checked out.
-        /// </remarks>
-        public bool IsActive()
-        {
-            return ReturnDate == null;
-        }
-
-        /// <summary>
-        /// Calculates the number of days this borrowing is overdue.
-        /// </summary>
-        /// <returns>
-        /// The number of days overdue (positive integer) if overdue and not returned;
-        /// 0 if not overdue or already returned.
-        /// </returns>
-        /// <remarks>
-        /// This method considers only active borrowings. Once a book is returned,
-        /// it's no longer considered overdue regardless of when it was actually returned.
-        /// </remarks>
-        public int GetDaysOverdue()
-        {
-            if (!IsActive() || DateTime.Now <= DueDate)
-                return 0;
-
-            return (int)(DateTime.Now - DueDate).TotalDays;
-        }
-
-        /// <summary>
         /// Marks this borrowing as finished by recording the return date and marking all borrowed copies as returned.
         /// </summary>
         /// <param name="returnDate">
