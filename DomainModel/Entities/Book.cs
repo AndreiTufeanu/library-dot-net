@@ -111,21 +111,6 @@ namespace DomainModel.Entities
         }
 
         /// <summary>
-        /// Gets the current number of available copies (not borrowed and not lecture-room-only).
-        /// </summary>
-        /// <returns>The count of available copies for borrowing.</returns>
-        /// <remarks>
-        /// This is a calculated property that requires database access. 
-        /// It counts all book copies across editions that are available and not restricted to lecture room.
-        /// </remarks>
-        public int GetAvailableCopiesCount()
-        {
-            return Editions?
-                .SelectMany(e => e.BookCopies)
-                .Count(bc => bc.IsAvailable && !bc.IsLectureRoomOnly) ?? 0;
-        }
-
-        /// <summary>
         /// Determines whether the book can be borrowed according to business rules.
         /// </summary>
         /// <returns>
@@ -137,7 +122,9 @@ namespace DomainModel.Entities
         {
             if (InitialCopies == 0) return false;
 
-            var availableCopies = GetAvailableCopiesCount();
+            var availableCopies = Editions?
+                .SelectMany(e => e.BookCopies)
+                .Count(bc => bc.IsAvailable && !bc.IsLectureRoomOnly) ?? 0;
             var hasNonLectureCopies = Editions?
                 .SelectMany(e => e.BookCopies)
                 .Any(bc => !bc.IsLectureRoomOnly) ?? false;
