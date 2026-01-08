@@ -27,21 +27,5 @@ namespace DomainModel.Entities
         /// to proxy and lazy load the collection.
         /// </remarks>
         public virtual ICollection<Borrowing> ProcessedLoans { get; protected set; } = new HashSet<Borrowing>();
-
-        /// <summary>
-        /// Determines whether this librarian is also registered as a reader in the system.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the librarian has associated reader details; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// This status affects which borrowing limits apply to this user.
-        /// When a librarian is also a reader, they benefit from special borrowing privileges
-        /// as specified in the business requirements.
-        /// </remarks>
-        public bool IsAlsoReader()
-        {
-            return ReaderDetails != null;
-        }
     }
 }
