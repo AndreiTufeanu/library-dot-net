@@ -10,15 +10,45 @@ namespace DomainModel.Entities
     /// <summary>Represents a physical book copy.</summary>
     public class BookCopy
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BookCopy"/> class.
+        /// Protected constructor for Entity Framework materialization and inheritance scenarios.
+        /// </summary>
+        /// <remarks>
+        /// This constructor is required by Entity Framework for materializing objects from the database.
+        /// It should not be used directly in application code. Use the parameterized constructor instead.
+        /// </remarks>
+        protected BookCopy() { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BookCopy"/> class with the specified lecture room restriction.
+        /// </summary>
+        /// <param name="isLectureRoomOnly">
+        /// <c>true</c> to restrict this book copy to lecture room use only; 
+        /// <c>false</c> to allow regular borrowing.
+        /// </param>
+        /// <remarks>
+        /// Use this constructor to create new book copies. The lecture room restriction 
+        /// cannot be changed after the book copy is created to maintain data consistency.
+        /// </remarks>
+        public BookCopy(bool isLectureRoomOnly)
+        {
+            IsLectureRoomOnly = isLectureRoomOnly;
+        }
+
         /// <summary>Gets or sets the unique identifier.</summary>
         /// <value>A unique GUID that identifies this physical book copy in the system.</value>
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        /// <summary>Gets or sets a value indicating whether this copy is restricted to lecture room use only.</summary>
+        /// <summary>Gets a value indicating whether this copy is restricted to lecture room use only.</summary>
         /// <value>Returns <c>true</c> if this book copy can only be used within the lecture room; otherwise, <c>false</c>.</value>
-        [Required]
-        public bool IsLectureRoomOnly { get; set; }
+        /// <remarks>
+        /// This property can only be set via the constructor and cannot be modified after creation
+        /// to ensure data consistency and proper state management.
+        /// </remarks>
+        [Required(ErrorMessage = "IsLectureRoomOnly is required.")]
+        public bool IsLectureRoomOnly { get; private set; } = false;
 
         /// <summary>Gets a value indicating whether this copy is currently available for borrowing.</summary>
         /// <value>Returns <c>true</c> if this book copy is available for borrowing; otherwise, <c>false</c>.</value>
@@ -27,7 +57,7 @@ namespace DomainModel.Entities
         /// <see cref="MarkAsBorrowed"/> and <see cref="MarkAsReturned"/> methods to ensure
         /// proper state management and business rule enforcement.
         /// </remarks>
-        [Required]
+        [Required(ErrorMessage = "IsAvailable is required.")]
         public bool IsAvailable { get; private set; } = true;
 
         /// <summary>Gets or sets the edition that this physical copy belongs to.</summary>
