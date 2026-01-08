@@ -19,9 +19,7 @@ namespace Infrastructure.Extensions
     /// separate extension methods for each architectural layer.
     /// </para>
     /// <para>
-    /// This method should be called during application startup in the composition root,
-    /// typically from the <c>ConfigureServices</c> method in the startup class, before
-    /// registering service layer dependencies.
+    /// This method should be called during application startup.
     /// </para>
     /// <para>
     /// All repositories are registered with scoped lifetime to ensure they share the same
