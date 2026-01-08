@@ -218,8 +218,8 @@ namespace TestDomainModel.UnitTests.Entities
             var author = new Author();
 
             // Act & Assert
-            author.Books.GetType().GetProperty("Books")?.SetMethod?.IsPublic
-                .Should().BeFalse();
+            author.Books.GetType().GetProperty("Books")?.SetMethod?.IsFamily
+                .Should().BeTrue();
         }
 
         [TestMethod]
