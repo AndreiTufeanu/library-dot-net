@@ -94,6 +94,7 @@
     <Compile Include="UnitTests\Entities\DomainTests.cs" />
     <Compile Include="UnitTests\Entities\EditionTests.cs" />
     <Compile Include="UnitTests\Entities\EntityTestBase.cs" />
+    <Compile Include="UnitTests\Entities\ReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
