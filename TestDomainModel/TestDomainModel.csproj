@@ -89,6 +89,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTests\Entities\AuthorTests.cs" />
     <Compile Include="UnitTests\Entities\BookCopyTests.cs" />
+    <Compile Include="UnitTests\Entities\BookTests.cs" />
     <Compile Include="UnitTests\Entities\BookTypeTests.cs" />
     <Compile Include="UnitTests\Entities\DomainTests.cs" />
     <Compile Include="UnitTests\Entities\EntityTestBase.cs" />
