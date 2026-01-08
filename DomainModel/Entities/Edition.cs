@@ -38,6 +38,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the physical copies of this edition.</summary>
         /// <value>A collection of <see cref="BookCopy"/> entities representing the physical copies of this edition.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{BookCopy}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<BookCopy> BookCopies { get; protected set; } = new HashSet<BookCopy>();
     }
 }

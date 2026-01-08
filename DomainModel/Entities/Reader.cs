@@ -55,10 +55,19 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the librarian account associated with this reader.</summary>
         /// <value>The <see cref="Librarian"/> entity if this reader is also a librarian; otherwise, <c>null</c>.</value>
+        /// <remarks>
+        /// This property has a protected setter to enforce the one-to-one relationship between
+        /// Reader and Librarian entities. It is managed by Entity Framework for navigation.
+        /// </remarks>
         public virtual Librarian LibrarianAccount { get; protected set; }
 
         /// <summary>Gets or sets the collection of borrowing records for this reader.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities representing this reader's borrowing history.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Borrowing}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Borrowing> Borrowings { get; protected set; } = new HashSet<Borrowing>();
     }
 }

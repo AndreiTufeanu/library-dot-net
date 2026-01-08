@@ -22,6 +22,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets a value indicating whether this copy is currently available for borrowing.</summary>
         /// <value>Returns <c>true</c> if this book copy is available for borrowing; otherwise, <c>false</c>.</value>
+        /// <remarks>
+        /// This property has a private setter and can only be modified through the 
+        /// <see cref="MarkAsBorrowed"/> and <see cref="MarkAsReturned"/> methods to ensure
+        /// proper state management and business rule enforcement.
+        /// </remarks>
         [Required]
         public bool IsAvailable { get; private set; } = true;
 
@@ -32,6 +37,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of borrowing records for this book copy.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities tracking the loan history of this book copy.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Borrowing}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Borrowing> Borrowings { get; protected set; } = new HashSet<Borrowing>();
 
         /// <summary>

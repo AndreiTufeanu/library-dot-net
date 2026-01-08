@@ -24,6 +24,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of editions that use this book type.</summary>
         /// <value>A collection of <see cref="Edition"/> entities that belong to this book type.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Edition}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Edition> Editions { get; protected set; } = new HashSet<Edition>();
     }
 }

@@ -21,6 +21,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of loans processed by this librarian.</summary>
         /// <value>A collection of <see cref="Borrowing"/> entities that were processed by this librarian.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Borrowing}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Borrowing> ProcessedLoans { get; protected set; } = new HashSet<Borrowing>();
 
         /// <summary>

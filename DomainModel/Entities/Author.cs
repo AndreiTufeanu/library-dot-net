@@ -33,6 +33,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of books written by this author.</summary>
         /// <value>A collection of <see cref="Book"/> entities associated with this author.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Book}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Book> Books { get; protected set; } = new HashSet<Book>();
     }
 }

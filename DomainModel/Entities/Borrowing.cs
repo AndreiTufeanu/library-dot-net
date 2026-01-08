@@ -40,6 +40,11 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the borrowed book copies.</summary>
         /// <value>A collection of <see cref="BookCopy"/> entities that were borrowed in this transaction.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{BookCopy}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<BookCopy> BookCopies { get; protected set; } = new HashSet<BookCopy>();
 
         /// <summary>Gets or sets the librarian who processed the loan.</summary>

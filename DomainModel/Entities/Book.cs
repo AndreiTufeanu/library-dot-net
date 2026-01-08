@@ -58,19 +58,38 @@ namespace DomainModel.Entities
 
         /// <summary>Gets the initial number of copies when the book was added to the library.</summary>
         /// <value>The initial stock count, which can only be set once when creating the book.</value>
+        /// <remarks>
+        /// This property has a private setter and can only be initialized via the constructor
+        /// or the <see cref="SetInitialCopies(int)"/> method. Once set, it cannot be modified.
+        /// </remarks>
         [Range(1, int.MaxValue, ErrorMessage = "InitialCopies must be at least 1.")]
         public int InitialCopies { get; private set; }
 
         /// <summary>Gets or sets the collection of authors who wrote this book.</summary>
         /// <value>A collection of <see cref="Author"/> entities associated with this book.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Author}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Author> Authors { get; protected set; } = new HashSet<Author>();
 
         /// <summary>Gets or sets the collection of domains this book belongs to.</summary>
         /// <value>A collection of <see cref="Domain"/> entities categorizing this book.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Domain}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Domain> Domains { get; protected set; } = new HashSet<Domain>();
 
         /// <summary>Gets or sets the collection of editions available for this book.</summary>
         /// <value>A collection of <see cref="Edition"/> entities representing different versions of this book.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Edition}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Edition> Editions { get; protected set; } = new HashSet<Edition>();
 
         /// <summary>

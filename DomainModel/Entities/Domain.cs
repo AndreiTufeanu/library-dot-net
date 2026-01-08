@@ -32,10 +32,20 @@ namespace DomainModel.Entities
 
         /// <summary>Gets or sets the collection of subdomains.</summary>
         /// <value>A collection of <see cref="Domain"/> entities that are children of this domain.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Domain}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection. Changes to this collection affect the domain hierarchy.
+        /// </remarks>
         public virtual ICollection<Domain> Subdomains { get; protected set; } = new HashSet<Domain>();
 
         /// <summary>Gets or sets the books belonging to this domain.</summary>
         /// <value>A collection of <see cref="Book"/> entities categorized under this domain.</value>
+        /// <remarks>
+        /// This collection is initialized as an empty <see cref="HashSet{Book}"/> and is managed
+        /// by Entity Framework for navigation. The setter is protected to allow Entity Framework
+        /// to proxy and lazy load the collection.
+        /// </remarks>
         public virtual ICollection<Book> Books { get; protected set; } = new HashSet<Book>();
 
         /// <summary>
