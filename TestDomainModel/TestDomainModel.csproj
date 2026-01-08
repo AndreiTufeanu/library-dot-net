@@ -92,6 +92,7 @@
     <Compile Include="UnitTests\Entities\BookTests.cs" />
     <Compile Include="UnitTests\Entities\BookTypeTests.cs" />
     <Compile Include="UnitTests\Entities\DomainTests.cs" />
+    <Compile Include="UnitTests\Entities\EditionTests.cs" />
     <Compile Include="UnitTests\Entities\EntityTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
