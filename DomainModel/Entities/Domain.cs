@@ -19,6 +19,7 @@ namespace DomainModel.Entities
         /// <value>The name of the domain/category (e.g., "Science Fiction", "History").</value>
         [Required(ErrorMessage = "Domain name is required.")]
         [StringLength(200, MinimumLength = 2, ErrorMessage = "Domain name must be between {2} and {1} characters.")]
+        [Index(IsUnique = true)]
         public string Name { get; set; }
 
         /// <summary>Gets or sets the description.</summary>

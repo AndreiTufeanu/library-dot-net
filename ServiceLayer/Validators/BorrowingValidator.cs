@@ -35,6 +35,7 @@ namespace ServiceLayer.Validators
                 .NotEmpty()
                 .WithMessage("At least one book copy must be borrowed.");
 
+            // Can't borrow multiple copies/editions of the same book title
             RuleFor(x => x.BookCopies)
                 .Must(HaveDistinctBookTitles)
                 .WithMessage("Cannot borrow multiple copies/editions of the same book title in one transaction.");
