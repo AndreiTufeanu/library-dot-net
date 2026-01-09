@@ -17,23 +17,20 @@ namespace ServiceLayer.Services
     public class BookTypeService : BaseService, IBookTypeService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IValidator<BookType> _validator;
 
         public BookTypeService(
             IUnitOfWork unitOfWork,
-            IValidator<BookType> validator,
             ILogger<BookTypeService> logger)
             : base(logger)
         {
             _unitOfWork = unitOfWork;
-            _validator = validator;
         }
 
         public async Task<ServiceResult<BookType>> CreateAsync(BookType bookType)
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                ValidationHelper.Validate(bookType, _validator);
+                ValidationHelper.Validate(bookType);
 
                 var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null)
@@ -81,7 +78,7 @@ namespace ServiceLayer.Services
                     throw new NotFoundException(nameof(BookType), bookType.Id);
                 }
 
-                ValidationHelper.Validate(bookType, _validator);
+                ValidationHelper.Validate(bookType);
 
                 var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null && existingBookType.Id != bookType.Id)

@@ -139,7 +139,6 @@
     <Compile Include="Services\HelperServices\BorrowingHelperService.cs" />
     <Compile Include="Services\LibrarianService.cs" />
     <Compile Include="Services\ReaderService.cs" />
-    <Compile Include="Validators\BookTypeValidator.cs" />
     <Compile Include="Validators\BookValidator.cs" />
     <Compile Include="Validators\BorrowingValidator.cs" />
     <Compile Include="Validators\DomainValidator.cs" />
