@@ -74,7 +74,7 @@ namespace TestDomainModel.UnitTests.Entities
         {
             // Arrange
             var book = _fixture.Build<Book>()
-                .FromFactory((bool isLectureRoomOnly) => new Book(initialCopies: 10))
+                .FromFactory(() => new Book(initialCopies: 10))
                 .With(b => b.Title, "Test Book Title")
                 .With(b => b.Description, "Test Description")
                 .Create();
@@ -91,7 +91,7 @@ namespace TestDomainModel.UnitTests.Entities
         {
             // Arrange
             var book = _fixture.Build<Book>()
-                .FromFactory((bool isLectureRoomOnly) => new Book(initialCopies: 10))
+                .FromFactory(() => new Book(initialCopies: 10))
                 .Without(b => b.Title)
                 .Create();
 
@@ -108,7 +108,7 @@ namespace TestDomainModel.UnitTests.Entities
         {
             // Arrange
             var book = _fixture.Build<Book>()
-                .FromFactory((bool isLectureRoomOnly) => new Book(initialCopies: 10))
+                .FromFactory(() => new Book(initialCopies: 10))
                 .With(b => b.Title, "A")
                 .Create();
 
@@ -125,7 +125,7 @@ namespace TestDomainModel.UnitTests.Entities
         {
             // Arrange
             var book = _fixture.Build<Book>()
-                .FromFactory((bool isLectureRoomOnly) => new Book(initialCopies: 10))
+                .FromFactory(() => new Book(initialCopies: 10))
                 .With(b => b.Title, new string('A', 301))
                 .Create();
 
@@ -142,7 +142,7 @@ namespace TestDomainModel.UnitTests.Entities
         {
             // Arrange
             var book = _fixture.Build<Book>()
-                .FromFactory((bool isLectureRoomOnly) => new Book(initialCopies: 10))
+                .FromFactory(() => new Book(initialCopies: 10))
                 .With(b => b.Description, new string('A', 501))
                 .Create();
 

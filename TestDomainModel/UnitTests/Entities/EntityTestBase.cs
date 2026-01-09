@@ -21,10 +21,6 @@ namespace TestDomainModel.UnitTests.Entities
             _fixture = new Fixture();
             _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            // Customize string generation to meet validation requirements
-            _fixture.Customize<string>(c => c.FromFactory(() =>
-                string.Join("", _fixture.CreateMany<char>(10).Select(ch => char.IsLetter(ch) ? ch : 'a'))));
         }
 
         protected ValidationResult[] ValidateEntity(T entity)
