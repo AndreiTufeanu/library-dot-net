@@ -87,6 +87,7 @@
     <Compile Include="Validators\BookValidatorTests.cs" />
     <Compile Include="Validators\BorrowingValidatorTests.cs" />
     <Compile Include="Validators\DomainValidatorTests.cs" />
+    <Compile Include="Validators\EditionValidatorTests.cs" />
     <Compile Include="Validators\ValidatorTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
