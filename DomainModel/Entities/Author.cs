@@ -20,7 +20,7 @@ namespace DomainModel.Entities
         /// <summary>Gets or sets the first name.</summary>
         /// <value>The author's first name.</value>
         [Required(ErrorMessage = "First Name is required.")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Fist Name must have between {2} and {1} characters.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "First Name must have between {2} and {1} characters.")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "First Name can only contain letters and spaces.")]
         public string FirstName { get; set; }
 

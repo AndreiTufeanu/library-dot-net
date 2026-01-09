@@ -111,30 +111,17 @@ namespace ServiceLayer.Services
                     throw new NotFoundException(nameof(Author), id);
                 }
 
-                // Check if author has books before deletion
                 if (await _unitOfWork.Authors.HasBooksAsync(id))
                 {
                     throw new BusinessRuleException("Cannot delete an author that has associated books.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
-                {
-                    var success = await _unitOfWork.Authors.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete author");
-                    }
+                var success = await _unitOfWork.Authors.DeleteAsync(id);
+                if (!success)
+                    throw new InvalidOperationException("Failed to delete author");
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
@@ -146,45 +133,6 @@ namespace ServiceLayer.Services
                 return await _unitOfWork.Authors.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
-        }
-
-        public async Task<ServiceResult<Author>> FindByNameAsync(string firstName, string lastName)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(firstName))
-                {
-                    throw new AggregateValidationException("First name cannot be empty.");
-                }
-
-                if (string.IsNullOrWhiteSpace(lastName))
-                {
-                    throw new AggregateValidationException("Last name cannot be empty.");
-                }
-
-                var author = await _unitOfWork.Authors.FindByNameAsync(firstName, lastName);
-                if (author == null)
-                {
-                    throw new NotFoundException($"Author '{firstName} {lastName}' not found.");
-                }
-
-                return author;
-
-            }, nameof(FindByNameAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Author>>> FindByLastNameAsync(string lastName)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(lastName))
-                {
-                    throw new AggregateValidationException("Last name cannot be empty.");
-                }
-
-                return await _unitOfWork.Authors.FindByLastNameAsync(lastName);
-
-            }, nameof(FindByLastNameAsync));
         }
     }
 }
