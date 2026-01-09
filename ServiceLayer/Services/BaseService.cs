@@ -31,7 +31,7 @@ namespace ServiceLayer.Services
                 _logger.LogInformation("Completed {OperationName} successfully", operationName);
                 return ServiceResult<TResult>.SuccessResult(result);
             }
-            catch (ValidationException ex)
+            catch (AggregateValidationException ex)
             {
                 _logger.LogWarning("Validation failed for {OperationName}: {ErrorMessage}",
                     operationName, ex.Message);

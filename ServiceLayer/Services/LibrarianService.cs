@@ -43,7 +43,7 @@ namespace ServiceLayer.Services
                     var existingLibrarian = await _unitOfWork.Librarians.GetByReaderIdAsync(reader.Id);
                     if (existingLibrarian != null)
                     {
-                        throw new Exceptions.ValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already a librarian.");
+                        throw new AggregateValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already a librarian.");
                     }
                 }
 
@@ -101,7 +101,7 @@ namespace ServiceLayer.Services
                     var existingLibrarian = await _unitOfWork.Librarians.GetByReaderIdAsync(reader.Id);
                     if (existingLibrarian != null && existingLibrarian.Id != librarian.Id)
                     {
-                        throw new Exceptions.ValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already assigned to another librarian.");
+                        throw new AggregateValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already assigned to another librarian.");
                     }
                 }
 
@@ -207,7 +207,7 @@ namespace ServiceLayer.Services
                 var existingLibrarian = await _unitOfWork.Librarians.GetByReaderIdAsync(readerId);
                 if (existingLibrarian != null)
                 {
-                    throw new Exceptions.ValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already a librarian.");
+                    throw new AggregateValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already a librarian.");
                 }
 
                 var librarian = new Librarian

@@ -37,7 +37,7 @@ namespace ServiceLayer.Services
                 var existingDomain = await _unitOfWork.Domains.FindByNameAsync(domain.Name);
                 if (existingDomain != null)
                 {
-                    throw new Exceptions.ValidationException($"Domain '{domain.Name}' already exists.");
+                    throw new AggregateValidationException($"Domain '{domain.Name}' already exists.");
                 }
 
                 if (domain.ParentDomain != null && domain.ParentDomain.Id != Guid.Empty)
@@ -94,7 +94,7 @@ namespace ServiceLayer.Services
                 var existingDomain = await _unitOfWork.Domains.FindByNameAsync(domain.Name);
                 if (existingDomain != null && existingDomain.Id != domain.Id)
                 {
-                    throw new Exceptions.ValidationException($"Another domain with name '{domain.Name}' already exists.");
+                    throw new AggregateValidationException($"Another domain with name '{domain.Name}' already exists.");
                 }
 
                 await _unitOfWork.Domains.UpdateAsync(domain);
@@ -161,7 +161,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    throw new Exceptions.ValidationException("Domain name cannot be empty.");
+                    throw new AggregateValidationException("Domain name cannot be empty.");
                 }
 
                 var domain = await _unitOfWork.Domains.FindByNameAsync(name);

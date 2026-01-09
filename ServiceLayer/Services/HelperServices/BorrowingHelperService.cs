@@ -1,5 +1,6 @@
 ﻿using DomainModel.Entities;
 using DomainModel.RepositoryContracts;
+using ServiceLayer.Exceptions;
 using ServiceLayer.ServiceContracts;
 using ServiceLayer.ServiceContracts.HelperServiceContracts;
 using System;
@@ -75,7 +76,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (distinctBookCount > maxBooksPerBorrowing)
             {
-                throw new Exceptions.ValidationException($"Cannot borrow more than {maxBooksPerBorrowing} books in one transaction.");
+                throw new AggregateValidationException($"Cannot borrow more than {maxBooksPerBorrowing} books in one transaction.");
             }
         }
 
@@ -93,7 +94,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (borrowedCount >= maxBooksInPeriod)
             {
-                throw new Exceptions.ValidationException($"Reader has reached the maximum number of books ({maxBooksInPeriod}) allowed in the {windowDays}-day period.");
+                throw new AggregateValidationException($"Reader has reached the maximum number of books ({maxBooksInPeriod}) allowed in the {windowDays}-day period.");
             }
         }
 
@@ -131,7 +132,7 @@ namespace ServiceLayer.Services.HelperServices
                 if (borrowedCount >= maxBooksSameDomain)
                 {
                     var domainNames = string.Join(", ", book.Domains.Select(d => d.Name));
-                    throw new Exceptions.ValidationException(
+                    throw new AggregateValidationException(
                         $"Reader has reached the maximum number of books ({maxBooksSameDomain}) " +
                         $"allowed from domain hierarchy '{domainNames}' within {timeLimitMonths} months.");
                 }
@@ -152,7 +153,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (totalExtensions + borrowing.ExtensionDays.Value > maxOvertimeSumDays)
             {
-                throw new Exceptions.ValidationException($"Reader would exceed the maximum allowed extension days ({maxOvertimeSumDays}) in the last {extensionWindowMonths} months. Current total: {totalExtensions}, requested: {borrowing.ExtensionDays.Value}.");
+                throw new AggregateValidationException($"Reader would exceed the maximum allowed extension days ({maxOvertimeSumDays}) in the last {extensionWindowMonths} months. Current total: {totalExtensions}, requested: {borrowing.ExtensionDays.Value}.");
             }
         }
 
@@ -184,7 +185,7 @@ namespace ServiceLayer.Services.HelperServices
                     {
                         var book = await _unitOfWork.Books.GetByIdAsync(bookId);
                         var bookTitle = book?.Title ?? "Unknown Book";
-                        throw new Exceptions.ValidationException($"Reader cannot borrow '{bookTitle}' again within {sameBookDelay.TotalDays} days. Last borrowed: {lastBorrowDate.Value:yyyy-MM-dd}.");
+                        throw new AggregateValidationException($"Reader cannot borrow '{bookTitle}' again within {sameBookDelay.TotalDays} days. Last borrowed: {lastBorrowDate.Value:yyyy-MM-dd}.");
                     }
                 }
             }
@@ -203,7 +204,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (borrowedToday >= maxBooksPerDay)
             {
-                throw new Exceptions.ValidationException($"Reader has reached the maximum number of books ({maxBooksPerDay}) allowed per day.");
+                throw new AggregateValidationException($"Reader has reached the maximum number of books ({maxBooksPerDay}) allowed per day.");
             }
         }
 
@@ -217,7 +218,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (lentToday >= maxBooksLentPerDay)
             {
-                throw new Exceptions.ValidationException($"Librarian has reached the maximum number of books ({maxBooksLentPerDay}) allowed to lend per day.");
+                throw new AggregateValidationException($"Librarian has reached the maximum number of books ({maxBooksLentPerDay}) allowed to lend per day.");
             }
         }
         private async Task<HashSet<Guid>> GetCompleteDomainHierarchyForBookAsync(Guid bookId)

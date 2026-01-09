@@ -108,7 +108,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\BusinessRuleException.cs" />
     <Compile Include="Exceptions\NotFoundException.cs" />
-    <Compile Include="Exceptions\ValidationException.cs" />
+    <Compile Include="Exceptions\AggregateValidationException.cs" />
     <Compile Include="Helpers\ConfigurationConstantsHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

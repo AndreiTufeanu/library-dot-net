@@ -1,5 +1,6 @@
 ﻿using DomainModel.Entities;
 using DomainModel.RepositoryContracts;
+using ServiceLayer.Exceptions;
 using ServiceLayer.ServiceContracts;
 using ServiceLayer.ServiceContracts.HelperServiceContracts;
 using System;
@@ -28,7 +29,7 @@ namespace ServiceLayer.Services.HelperServices
 
             if (domains.Count > maxDomains)
             {
-                throw new Exceptions.ValidationException(
+                throw new AggregateValidationException(
                     $"A book cannot belong to more than {maxDomains} domains. " +
                     $"Current count: {domains.Count}");
             }

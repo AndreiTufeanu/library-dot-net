@@ -35,7 +35,7 @@ namespace ServiceLayer.Services
                 var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null)
                 {
-                    throw new Exceptions.ValidationException($"A book type with the name '{bookType.Name}' already exists.");
+                    throw new AggregateValidationException($"A book type with the name '{bookType.Name}' already exists.");
                 }
 
                 var addedBookType = await _unitOfWork.BookTypes.AddAsync(bookType);
@@ -83,7 +83,7 @@ namespace ServiceLayer.Services
                 var existingBookType = await _unitOfWork.BookTypes.FindByNameAsync(bookType.Name);
                 if (existingBookType != null && existingBookType.Id != bookType.Id)
                 {
-                    throw new Exceptions.ValidationException($"Another book type with the name '{bookType.Name}' already exists.");
+                    throw new AggregateValidationException($"Another book type with the name '{bookType.Name}' already exists.");
                 }
 
                 await _unitOfWork.BookTypes.UpdateAsync(bookType);

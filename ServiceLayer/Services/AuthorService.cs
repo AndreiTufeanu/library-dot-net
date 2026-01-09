@@ -39,7 +39,7 @@ namespace ServiceLayer.Services
 
                 if (existingAuthor != null)
                 {
-                    throw new Exceptions.ValidationException($"Author '{author.FirstName} {author.LastName}' already exists.");
+                    throw new AggregateValidationException($"Author '{author.FirstName} {author.LastName}' already exists.");
                 }
 
                 var addedAuthor = await _unitOfWork.Authors.AddAsync(author);
@@ -91,7 +91,7 @@ namespace ServiceLayer.Services
 
                 if (existingAuthor != null && existingAuthor.Id != author.Id)
                 {
-                    throw new Exceptions.ValidationException($"Another author with name '{author.FirstName} {author.LastName}' already exists.");
+                    throw new AggregateValidationException($"Another author with name '{author.FirstName} {author.LastName}' already exists.");
                 }
 
                 await _unitOfWork.Authors.UpdateAsync(author);
@@ -154,12 +154,12 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(firstName))
                 {
-                    throw new Exceptions.ValidationException("First name cannot be empty.");
+                    throw new AggregateValidationException("First name cannot be empty.");
                 }
 
                 if (string.IsNullOrWhiteSpace(lastName))
                 {
-                    throw new Exceptions.ValidationException("Last name cannot be empty.");
+                    throw new AggregateValidationException("Last name cannot be empty.");
                 }
 
                 var author = await _unitOfWork.Authors.FindByNameAsync(firstName, lastName);
@@ -179,7 +179,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(lastName))
                 {
-                    throw new Exceptions.ValidationException("Last name cannot be empty.");
+                    throw new AggregateValidationException("Last name cannot be empty.");
                 }
 
                 return await _unitOfWork.Authors.FindByLastNameAsync(lastName);

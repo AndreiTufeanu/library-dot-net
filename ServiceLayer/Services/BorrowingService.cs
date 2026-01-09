@@ -57,7 +57,7 @@ namespace ServiceLayer.Services
                 // Verify all book copies exist and are available
                 if (borrowing.BookCopies == null || !borrowing.BookCopies.Any())
                 {
-                    throw new Exceptions.ValidationException("At least one book copy must be borrowed.");
+                    throw new AggregateValidationException("At least one book copy must be borrowed.");
                 }
 
                 foreach (var bookCopy in borrowing.BookCopies)
@@ -309,7 +309,7 @@ namespace ServiceLayer.Services
 
                 if (extensionDays <= 0)
                 {
-                    throw new Exceptions.ValidationException("Extension days must be positive.");
+                    throw new AggregateValidationException("Extension days must be positive.");
                 }
 
                 var testBorrowing = new Borrowing

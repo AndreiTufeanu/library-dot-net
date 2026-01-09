@@ -138,7 +138,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(title))
                 {
-                    throw new Exceptions.ValidationException("Title cannot be empty.");
+                    throw new AggregateValidationException("Title cannot be empty.");
                 }
 
                 return await _unitOfWork.Books.FindByTitleAsync(title);

@@ -185,7 +185,7 @@ namespace ServiceLayer.Services
             {
                 if (startDate > endDate)
                 {
-                    throw new Exceptions.ValidationException("Start date cannot be after end date.");
+                    throw new AggregateValidationException("Start date cannot be after end date.");
                 }
 
                 return await _unitOfWork.Editions.GetPublishedBetweenAsync(startDate, endDate);

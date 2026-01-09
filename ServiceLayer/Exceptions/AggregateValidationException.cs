@@ -22,11 +22,11 @@ namespace ServiceLayer.Exceptions
     /// </para>
     /// <para>
     /// Unlike <see cref="BusinessRuleException"/>, which represents violations of
-    /// complex business logic, <see cref="ValidationException"/> is typically used
+    /// complex business logic, <see cref="AggregateValidationException"/> is typically used
     /// for input data validation (required fields, format validation, range checks, etc.).
     /// </para>
     /// </remarks>
-    public class ValidationException : Exception
+    public class AggregateValidationException : Exception
     {
         /// <summary>
         /// Gets the collection of validation error messages.
@@ -35,20 +35,20 @@ namespace ServiceLayer.Exceptions
         public List<string> Errors { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationException"/> class with multiple validation errors.
+        /// Initializes a new instance of the <see cref="AggregateValidationException"/> class with multiple validation errors.
         /// </summary>
         /// <param name="errors">The collection of validation error messages.</param>
-        public ValidationException(List<string> errors)
+        public AggregateValidationException(List<string> errors)
             : base($"Validation failed: {string.Join("; ", errors)}")
         {
             Errors = errors;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationException"/> class with a single validation error.
+        /// Initializes a new instance of the <see cref="AggregateValidationException"/> class with a single validation error.
         /// </summary>
         /// <param name="error">The validation error message.</param>
-        public ValidationException(string error)
+        public AggregateValidationException(string error)
             : base($"Validation failed: {error}")
         {
             Errors = new List<string> { error };

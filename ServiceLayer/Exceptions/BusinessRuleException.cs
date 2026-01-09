@@ -16,7 +16,7 @@ namespace ServiceLayer.Exceptions
     /// constraints that ensure data integrity and compliance with library policies.
     /// </para>
     /// <para>
-    /// Unlike <see cref="ValidationException"/>, which is used for input validation,
+    /// Unlike <see cref="AggregateValidationException"/>, which is used for input validation,
     /// <see cref="BusinessRuleException"/> is used for violations of complex business
     /// logic that may involve multiple entities or database state.
     /// </para>

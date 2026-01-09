@@ -39,7 +39,7 @@ namespace ServiceLayer.Services
                     var existingByEmail = await _unitOfWork.Readers.FindByEmailAsync(reader.Email);
                     if (existingByEmail != null)
                     {
-                        throw new Exceptions.ValidationException($"Reader with email '{reader.Email}' already exists.");
+                        throw new AggregateValidationException($"Reader with email '{reader.Email}' already exists.");
                     }
                 }
 
@@ -48,7 +48,7 @@ namespace ServiceLayer.Services
                     var existingByPhone = await _unitOfWork.Readers.FindByPhoneAsync(reader.PhoneNumber);
                     if (existingByPhone != null)
                     {
-                        throw new Exceptions.ValidationException($"Reader with phone number '{reader.PhoneNumber}' already exists.");
+                        throw new AggregateValidationException($"Reader with phone number '{reader.PhoneNumber}' already exists.");
                     }
                 }
 
@@ -99,7 +99,7 @@ namespace ServiceLayer.Services
                     var existingByEmail = await _unitOfWork.Readers.FindByEmailAsync(reader.Email);
                     if (existingByEmail != null && existingByEmail.Id != reader.Id)
                     {
-                        throw new Exceptions.ValidationException($"Another reader with email '{reader.Email}' already exists.");
+                        throw new AggregateValidationException($"Another reader with email '{reader.Email}' already exists.");
                     }
                 }
 
@@ -108,7 +108,7 @@ namespace ServiceLayer.Services
                     var existingByPhone = await _unitOfWork.Readers.FindByPhoneAsync(reader.PhoneNumber);
                     if (existingByPhone != null && existingByPhone.Id != reader.Id)
                     {
-                        throw new Exceptions.ValidationException($"Another reader with phone number '{reader.PhoneNumber}' already exists.");
+                        throw new AggregateValidationException($"Another reader with phone number '{reader.PhoneNumber}' already exists.");
                     }
                 }
 
@@ -171,7 +171,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(email))
                 {
-                    throw new Exceptions.ValidationException("Email cannot be empty.");
+                    throw new AggregateValidationException("Email cannot be empty.");
                 }
 
                 var reader = await _unitOfWork.Readers.FindByEmailAsync(email);
@@ -191,7 +191,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(phoneNumber))
                 {
-                    throw new Exceptions.ValidationException("Phone number cannot be empty.");
+                    throw new AggregateValidationException("Phone number cannot be empty.");
                 }
 
                 var reader = await _unitOfWork.Readers.FindByPhoneAsync(phoneNumber);
@@ -211,7 +211,7 @@ namespace ServiceLayer.Services
             {
                 if (string.IsNullOrWhiteSpace(lastName))
                 {
-                    throw new Exceptions.ValidationException("Last name cannot be empty.");
+                    throw new AggregateValidationException("Last name cannot be empty.");
                 }
 
                 return await _unitOfWork.Readers.FindByLastNameAsync(lastName);

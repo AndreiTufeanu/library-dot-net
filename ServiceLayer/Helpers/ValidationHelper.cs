@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using ServiceLayer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +13,7 @@ namespace ServiceLayer.Helpers
     {
         /// <summary>
         /// Validates an object using Data Annotations and FluentValidation
-        /// Throws ValidationException if validation fails
+        /// Throws AggregateValidationException if validation fails
         /// </summary>
         public static void Validate<T>(T obj, IValidator<T> validator = null)
         {
@@ -47,7 +48,7 @@ namespace ServiceLayer.Helpers
             // Throw if any errors
             if (errors.Any())
             {
-                throw new Exceptions.ValidationException(errors);
+                throw new AggregateValidationException(errors);
             }
         }
     }
