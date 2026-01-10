@@ -23,14 +23,6 @@ namespace ServiceLayer.Exceptions
     public class NotFoundException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the resource not found error.</param>
-        public NotFoundException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"/> class for a specific entity and identifier.
         /// </summary>
         /// <param name="entityName">The name of the entity type that was not found (e.g., "Book", "Author").</param>
