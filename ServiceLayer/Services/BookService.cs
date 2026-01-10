@@ -101,24 +101,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a book that has physical copies.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Books.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.Books.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete book");
-                    }
+                    throw new InvalidOperationException("Failed to delete book");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
