@@ -48,7 +48,7 @@ namespace ServiceLayer.Validators
 
         private bool HaveDistinctBookTitles(ICollection<BookCopy> bookCopies)
         {
-            if (bookCopies == null || bookCopies.Count <= 1)
+            if (bookCopies.Count <= 1)
                 return true;
 
             var distinctBookCount = bookCopies
@@ -62,7 +62,7 @@ namespace ServiceLayer.Validators
 
         private bool HaveSufficientDomainDiversity(ICollection<BookCopy> bookCopies)
         {
-            if (bookCopies == null || bookCopies.Count < 3)
+            if (bookCopies.Count < 3)
                 return true;
 
             var domainIds = new HashSet<Guid>();
@@ -70,12 +70,9 @@ namespace ServiceLayer.Validators
             foreach (var copy in bookCopies)
             {
                 var edition = copy.Edition;
-                if (edition?.Book?.Domains != null)
+                foreach (var domain in edition.Book.Domains)
                 {
-                    foreach (var domain in edition.Book.Domains)
-                    {
-                        domainIds.Add(domain.Id);
-                    }
+                    domainIds.Add(domain.Id);
                 }
             }
 
