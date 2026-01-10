@@ -106,5 +106,49 @@ namespace TestServiceLayer.Validators
             result.Errors.Should().Contain(e =>
                 e.ErrorMessage.Contains("cannot be explicitly assigned to domains that are in an ancestor-descendant relationship"));
         }
+
+        [TestMethod]
+        public void Validate_BookWithSingleDomain_ShouldPassValidation()
+        {
+            // Arrange
+            var book = _fixture.Build<Book>()
+                .FromFactory(() => new Book(initialCopies: 10))
+                .With(b => b.Title, "Test Book")
+                .Create();
+
+            var domain = new Domain { Id = Guid.NewGuid(), Name = "History" };
+            book.Domains.Add(domain);
+
+            // Act
+            var result = Validate(book);
+
+            // Assert
+            result.IsValid.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Validate_BookWithDescendantAncestorOrder_ShouldFailValidation()
+        {
+            // Arrange
+            var book = _fixture.Build<Book>()
+                .FromFactory(() => new Book(initialCopies: 10))
+                .With(b => b.Title, "Test Book")
+                .Create();
+
+            var parent = new Domain { Id = Guid.NewGuid(), Name = "Math" };
+            var child = new Domain { Id = Guid.NewGuid(), Name = "Algebra", ParentDomain = parent };
+
+            parent.Subdomains.Add(child);
+
+            book.Domains.Add(child);
+            book.Domains.Add(parent);
+
+            // Act
+            var result = Validate(book);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+        }
+
     }
 }
