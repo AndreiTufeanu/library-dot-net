@@ -20,8 +20,8 @@ namespace ServiceLayer.Services
 
         public ConfigurationSettingService(IConfigurationSettingRepository repository, IMemoryCache cache)
         {
-            _repository = repository;
-            _cache = cache;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _cache = cache ?? throw new ArgumentNullException(nameof(_cache));
 
             // Initialize default values using ConfigurationConstants
             _defaultValues = new ConcurrentDictionary<string, object>
@@ -102,8 +102,9 @@ namespace ServiceLayer.Services
         {
             return await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
             {
-                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.BorrowingPeriodDays,
-                    (double)_defaultValues[ConfigurationConstants.BorrowingPeriodDays]);
+                var defaultVal = _defaultValues[ConfigurationConstants.BorrowingPeriodDays];
+                var defaultAsDouble = Convert.ToDouble(defaultVal);
+                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.BorrowingPeriodDays, defaultAsDouble);
                 return TimeSpan.FromDays(days);
             });
         }
@@ -163,8 +164,9 @@ namespace ServiceLayer.Services
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.SameBookDelayDays, async () =>
             {
-                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays,
-                    (double)_defaultValues[ConfigurationConstants.SameBookDelayDays]);
+                var defaultVal = _defaultValues[ConfigurationConstants.SameBookDelayDays];
+                var defaultAsDouble = Convert.ToDouble(defaultVal);
+                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays, defaultAsDouble);
                 return TimeSpan.FromDays(days);
             });
 
