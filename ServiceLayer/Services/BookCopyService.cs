@@ -101,24 +101,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a book copy that is currently borrowed.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.BookCopies.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.BookCopies.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete book copy");
-                    }
+                    throw new InvalidOperationException("Failed to delete book copy");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
