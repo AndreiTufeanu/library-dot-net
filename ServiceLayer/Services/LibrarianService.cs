@@ -121,7 +121,7 @@ namespace ServiceLayer.Services
                     throw new NotFoundException(nameof(Librarian), id);
                 }
 
-                if (librarian.ProcessedLoans != null && librarian.ProcessedLoans.Any())
+                if (librarian.ProcessedLoans.Any())
                 {
                     throw new BusinessRuleException("Cannot delete a librarian that has processed loans. Reassign loans first.");
                 }
