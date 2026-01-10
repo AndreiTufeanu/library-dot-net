@@ -19,7 +19,6 @@ namespace ServiceLayer.Services
 
         public BookCopyService(
             IUnitOfWork unitOfWork,
-            IValidator<BookCopy> validator,
             ILogger<BookCopyService> logger)
             : base(logger)
         {
@@ -32,7 +31,7 @@ namespace ServiceLayer.Services
             {
                 ValidationHelper.Validate(bookCopy);
 
-                if (bookCopy.Edition == null || !await _unitOfWork.Editions.ExistsAsync(bookCopy.Edition.Id))
+                if (!await _unitOfWork.Editions.ExistsAsync(bookCopy.Edition.Id))
                 {
                     throw new NotFoundException("Edition", bookCopy.Edition?.Id);
                 }
