@@ -118,24 +118,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete an edition that has physical copies.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Editions.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.Editions.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete edition");
-                    }
+                    throw new InvalidOperationException("Failed to delete edition");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
@@ -147,50 +137,6 @@ namespace ServiceLayer.Services
                 return await _unitOfWork.Editions.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Edition>>> GetByBookAsync(Guid bookId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var book = await _unitOfWork.Books.GetByIdAsync(bookId);
-                if (book == null)
-                {
-                    throw new NotFoundException(nameof(Book), bookId);
-                }
-
-                return await _unitOfWork.Editions.GetByBookAsync(bookId);
-
-            }, nameof(GetByBookAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Edition>>> GetByBookTypeAsync(Guid bookTypeId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var bookType = await _unitOfWork.BookTypes.GetByIdAsync(bookTypeId);
-                if (bookType == null)
-                {
-                    throw new NotFoundException(nameof(BookType), bookTypeId);
-                }
-
-                return await _unitOfWork.Editions.GetByBookTypeAsync(bookTypeId);
-
-            }, nameof(GetByBookTypeAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Edition>>> GetPublishedBetweenAsync(DateTime startDate, DateTime endDate)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (startDate > endDate)
-                {
-                    throw new AggregateValidationException("Start date cannot be after end date.");
-                }
-
-                return await _unitOfWork.Editions.GetPublishedBetweenAsync(startDate, endDate);
-
-            }, nameof(GetPublishedBetweenAsync));
         }
     }
 }
