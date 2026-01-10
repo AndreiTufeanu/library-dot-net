@@ -34,12 +34,12 @@ namespace ServiceLayer.Services
             {
                 ValidationHelper.Validate(edition, _validator);
 
-                if (edition.Book == null || !await _unitOfWork.Books.ExistsAsync(edition.Book.Id))
+                if (!await _unitOfWork.Books.ExistsAsync(edition.Book.Id))
                 {
                     throw new NotFoundException(nameof(Book), edition.Book?.Id);
                 }
 
-                if (edition.BookType == null || !await _unitOfWork.BookTypes.ExistsAsync(edition.BookType.Id))
+                if (!await _unitOfWork.BookTypes.ExistsAsync(edition.BookType.Id))
                 {
                     throw new NotFoundException(nameof(BookType), edition.BookType?.Id);
                 }
