@@ -23,7 +23,7 @@ namespace ServiceLayer.Services
             ILogger<BookTypeService> logger)
             : base(logger)
         {
-            _unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<ServiceResult<BookType>> CreateAsync(BookType bookType)
@@ -108,24 +108,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a book type that has associated editions.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.BookTypes.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.BookTypes.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete book type");
-                    }
+                    throw new InvalidOperationException("Failed to delete book type");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
