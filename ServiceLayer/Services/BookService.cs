@@ -121,58 +121,5 @@ namespace ServiceLayer.Services
 
             }, nameof(ExistsAsync));
         }
-
-        public async Task<ServiceResult<IEnumerable<Book>>> FindByTitleAsync(string title)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(title))
-                {
-                    throw new AggregateValidationException("Title cannot be empty.");
-                }
-
-                return await _unitOfWork.Books.FindByTitleAsync(title);
-
-            }, nameof(FindByTitleAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Book>>> FindByDomainAsync(Guid domainId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var domain = await _unitOfWork.Domains.GetByIdAsync(domainId);
-                if (domain == null)
-                {
-                    throw new NotFoundException(nameof(Domain), domainId);
-                }
-
-                return await _unitOfWork.Books.FindByDomainAsync(domainId);
-
-            }, nameof(FindByDomainAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Book>>> FindByAuthorAsync(Guid authorId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var author = await _unitOfWork.Authors.GetByIdAsync(authorId);
-                if (author == null)
-                {
-                    throw new NotFoundException(nameof(Author), authorId);
-                }
-
-                return await _unitOfWork.Books.FindByAuthorAsync(authorId);
-
-            }, nameof(FindByAuthorAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Book>>> GetAvailableForBorrowingAsync()
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                return await _unitOfWork.Books.GetAvailableForBorrowingAsync();
-
-            }, nameof(GetAvailableForBorrowingAsync));
-        }
     }
 }
