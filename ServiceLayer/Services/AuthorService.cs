@@ -19,7 +19,6 @@ namespace ServiceLayer.Services
 
         public AuthorService(
             IUnitOfWork unitOfWork,
-            IValidator<Author> validator,
             ILogger<AuthorService> logger)
             : base(logger)
         {

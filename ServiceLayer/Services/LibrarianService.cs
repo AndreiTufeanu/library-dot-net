@@ -19,7 +19,6 @@ namespace ServiceLayer.Services
 
         public LibrarianService(
             IUnitOfWork unitOfWork,
-            IValidator<Librarian> validator,
             ILogger<LibrarianService> logger)
             : base(logger)
         {
