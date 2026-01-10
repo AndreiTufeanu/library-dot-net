@@ -276,5 +276,64 @@ namespace TestServiceLayer.Validators
             // Assert
             result.IsValid.Should().BeTrue();
         }
+
+        [TestMethod]
+        public void Validate_BorrowingWithBookCopyHavingNullEdition_ShouldFailValidation()
+        {
+            // Arrange
+            var borrowing = _fixture.Build<Borrowing>()
+                .With(b => b.BorrowDate, DateTime.Now)
+                .With(b => b.DueDate, DateTime.Now.AddDays(30))
+                .Without(b => b.ReturnDate)
+                .Create();
+
+            var validBookCopy = _bookCopyFactory("Valid Book", "Test Domain");
+            var bookCopyWithNullEdition = new BookCopy(isLectureRoomOnly: false)
+            {
+                Id = Guid.NewGuid(),
+                Edition = null
+            };
+
+            borrowing.BookCopies.Add(validBookCopy);
+            borrowing.BookCopies.Add(bookCopyWithNullEdition);
+
+            // Act
+            var result = Validate(borrowing);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void Validate_BorrowingWithEditionHavingNullBook_ShouldFailValidation()
+        {
+            // Arrange
+            var borrowing = _fixture.Build<Borrowing>()
+                .With(b => b.BorrowDate, DateTime.Now)
+                .With(b => b.DueDate, DateTime.Now.AddDays(30))
+                .Without(b => b.ReturnDate)
+                .Create();
+
+            var validBookCopy = _bookCopyFactory("Valid Book", "Test Domain");
+            var bookCopyWithNullBook = new BookCopy(isLectureRoomOnly: false)
+            {
+                Id = Guid.NewGuid(),
+                Edition = new Edition
+                {
+                    Id = Guid.NewGuid(),
+                    Book = null,
+                    BookType = new BookType { Id = Guid.NewGuid(), Name = "Hardcover" }
+                }
+            };
+
+            borrowing.BookCopies.Add(validBookCopy);
+            borrowing.BookCopies.Add(bookCopyWithNullBook);
+
+            // Act
+            var result = Validate(borrowing);
+
+            // Assert
+            result.IsValid.Should().BeFalse();
+        }
     }
 }
