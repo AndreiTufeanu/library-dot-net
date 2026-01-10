@@ -124,24 +124,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a domain that has subdomains. Delete subdomains first.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Domains.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.Domains.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete domain");
-                    }
+                    throw new InvalidOperationException("Failed to delete domain");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
@@ -153,50 +143,6 @@ namespace ServiceLayer.Services
                 return await _unitOfWork.Domains.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
-        }
-
-        public async Task<ServiceResult<Domain>> FindByNameAsync(string name)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    throw new AggregateValidationException("Domain name cannot be empty.");
-                }
-
-                var domain = await _unitOfWork.Domains.FindByNameAsync(name);
-                if (domain == null)
-                {
-                    throw new NotFoundException($"Domain '{name}' not found.");
-                }
-
-                return domain;
-
-            }, nameof(FindByNameAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Domain>>> GetRootDomainsAsync()
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                return await _unitOfWork.Domains.GetRootDomainsAsync();
-
-            }, nameof(GetRootDomainsAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Domain>>> GetSubdomainsAsync(Guid parentDomainId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var parentDomain = await _unitOfWork.Domains.GetByIdAsync(parentDomainId);
-                if (parentDomain == null)
-                {
-                    throw new NotFoundException(nameof(Domain), parentDomainId);
-                }
-
-                return await _unitOfWork.Domains.GetSubdomainsAsync(parentDomainId);
-
-            }, nameof(GetSubdomainsAsync));
         }
     }
 }
