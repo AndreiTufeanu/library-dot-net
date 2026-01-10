@@ -126,24 +126,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a librarian that has processed loans. Reassign loans first.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Librarians.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.Librarians.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete librarian");
-                    }
+                    throw new InvalidOperationException("Failed to delete librarian");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
@@ -155,108 +145,6 @@ namespace ServiceLayer.Services
                 return await _unitOfWork.Librarians.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
-        }
-
-        public async Task<ServiceResult<Librarian>> GetByReaderIdAsync(Guid readerId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var reader = await _unitOfWork.Readers.GetByIdAsync(readerId);
-                if (reader == null)
-                {
-                    throw new NotFoundException(nameof(Reader), readerId);
-                }
-
-                var librarian = await _unitOfWork.Librarians.GetByReaderIdAsync(readerId);
-                if (librarian == null)
-                {
-                    throw new NotFoundException($"Librarian for reader ID '{readerId}' not found.");
-                }
-
-                return librarian;
-
-            }, nameof(GetByReaderIdAsync));
-        }
-
-        public async Task<ServiceResult<bool>> IsReaderAlsoLibrarianAsync(Guid readerId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var reader = await _unitOfWork.Readers.GetByIdAsync(readerId);
-                if (reader == null)
-                {
-                    throw new NotFoundException(nameof(Reader), readerId);
-                }
-
-                return await _unitOfWork.Librarians.IsReaderAlsoLibrarianAsync(readerId);
-
-            }, nameof(IsReaderAlsoLibrarianAsync));
-        }
-
-        public async Task<ServiceResult<Librarian>> CreateFromReaderAsync(Guid readerId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var reader = await _unitOfWork.Readers.GetByIdAsync(readerId);
-                if (reader == null)
-                {
-                    throw new NotFoundException(nameof(Reader), readerId);
-                }
-
-                var existingLibrarian = await _unitOfWork.Librarians.GetByReaderIdAsync(readerId);
-                if (existingLibrarian != null)
-                {
-                    throw new AggregateValidationException($"Reader '{reader.FirstName} {reader.LastName}' is already a librarian.");
-                }
-
-                var librarian = new Librarian
-                {
-                    ReaderDetails = reader
-                };
-
-                var addedLibrarian = await _unitOfWork.Librarians.AddAsync(librarian);
-                await _unitOfWork.SaveChangesAsync();
-
-                return addedLibrarian;
-
-            }, nameof(CreateFromReaderAsync));
-        }
-
-        public async Task<ServiceResult<bool>> RemoveLibrarianStatusAsync(Guid librarianId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var librarian = await _unitOfWork.Librarians.GetByIdAsync(librarianId);
-                if (librarian == null)
-                {
-                    throw new NotFoundException(nameof(Librarian), librarianId);
-                }
-
-                if (librarian.ProcessedLoans != null && librarian.ProcessedLoans.Any())
-                {
-                    throw new BusinessRuleException("Cannot remove librarian status from someone who has processed loans.");
-                }
-
-                await _unitOfWork.BeginTransactionAsync();
-                try
-                {
-                    var success = await _unitOfWork.Librarians.DeleteAsync(librarianId);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to remove librarian status");
-                    }
-
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
-
-            }, nameof(RemoveLibrarianStatusAsync));
         }
     }
 }

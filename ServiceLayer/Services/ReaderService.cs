@@ -134,24 +134,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a reader that has active borrowings.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Readers.DeleteAsync(id);
+                if (!success)
                 {
-                    var success = await _unitOfWork.Readers.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete reader");
-                    }
+                    throw new InvalidOperationException("Failed to delete reader");
+                }
 
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
@@ -163,75 +153,6 @@ namespace ServiceLayer.Services
                 return await _unitOfWork.Readers.ExistsAsync(id);
 
             }, nameof(ExistsAsync));
-        }
-
-        public async Task<ServiceResult<Reader>> FindByEmailAsync(string email)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(email))
-                {
-                    throw new AggregateValidationException("Email cannot be empty.");
-                }
-
-                var reader = await _unitOfWork.Readers.FindByEmailAsync(email);
-                if (reader == null)
-                {
-                    throw new NotFoundException($"Reader with email '{email}' not found.");
-                }
-
-                return reader;
-
-            }, nameof(FindByEmailAsync));
-        }
-
-        public async Task<ServiceResult<Reader>> FindByPhoneAsync(string phoneNumber)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(phoneNumber))
-                {
-                    throw new AggregateValidationException("Phone number cannot be empty.");
-                }
-
-                var reader = await _unitOfWork.Readers.FindByPhoneAsync(phoneNumber);
-                if (reader == null)
-                {
-                    throw new NotFoundException($"Reader with phone number '{phoneNumber}' not found.");
-                }
-
-                return reader;
-
-            }, nameof(FindByPhoneAsync));
-        }
-
-        public async Task<ServiceResult<IEnumerable<Reader>>> FindByLastNameAsync(string lastName)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                if (string.IsNullOrWhiteSpace(lastName))
-                {
-                    throw new AggregateValidationException("Last name cannot be empty.");
-                }
-
-                return await _unitOfWork.Readers.FindByLastNameAsync(lastName);
-
-            }, nameof(FindByLastNameAsync));
-        }
-
-        public async Task<ServiceResult<bool>> HasActiveBorrowingsAsync(Guid readerId)
-        {
-            return await ExecuteServiceOperationAsync(async () =>
-            {
-                var reader = await _unitOfWork.Readers.GetByIdAsync(readerId);
-                if (reader == null)
-                {
-                    throw new NotFoundException(nameof(Reader), readerId);
-                }
-
-                return await _unitOfWork.Readers.HasActiveBorrowingsAsync(readerId);
-
-            }, nameof(HasActiveBorrowingsAsync));
         }
     }
 }
