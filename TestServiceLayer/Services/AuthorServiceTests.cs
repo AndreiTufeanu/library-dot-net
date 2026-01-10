@@ -23,7 +23,6 @@ namespace TestServiceLayer.Services
     {
         private readonly Fixture _fixture;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-        private readonly Mock<IValidator<Author>> _validatorMock;
         private readonly Mock<ILogger<AuthorService>> _loggerMock;
         private readonly AuthorService _service;
 
@@ -36,13 +35,12 @@ namespace TestServiceLayer.Services
             _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
             _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _validatorMock = new Mock<IValidator<Author>>();
             _loggerMock = new Mock<ILogger<AuthorService>>();
 
             _authorRepositoryMock = new Mock<IAuthorRepository>();
             _unitOfWorkMock.Setup(u => u.Authors).Returns(_authorRepositoryMock.Object);
 
-            _service = new AuthorService(_unitOfWorkMock.Object, _validatorMock.Object, _loggerMock.Object);
+            _service = new AuthorService(_unitOfWorkMock.Object, _loggerMock.Object);
         }
 
         private Author CreateValidAuthor()
@@ -64,7 +62,7 @@ namespace TestServiceLayer.Services
             ILogger<AuthorService> logger = Mock.Of<ILogger<AuthorService>>();
 
             // Act
-            Action act = () => new AuthorService(unitOfWork, validator, logger);
+            Action act = () => new AuthorService(unitOfWork, logger);
 
             // Assert
             act.Should().Throw<ArgumentNullException>();
