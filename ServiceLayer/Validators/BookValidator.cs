@@ -25,7 +25,7 @@ namespace ServiceLayer.Validators
 
         private bool HaveValidDomainRelationships(ICollection<Domain> domains)
         {
-            if (domains == null || domains.Count <= 1)
+            if (domains.Count <= 1)
                 return true;
 
             var domainList = domains.ToList();
