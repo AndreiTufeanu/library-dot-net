@@ -9,10 +9,19 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Validators
 {
+    /// <summary>
+    /// Validator for <see cref="Book"/> entities that enforces business rules
+    /// related to book domain assignments and relationships.
+    /// </summary>
     public class BookValidator : AbstractValidator<Book>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BookValidator"/> class
+        /// and configures the validation rules.
+        /// </summary>
         public BookValidator()
         {
+            // Ensure at least one domain is assigned to the book
             RuleFor(x => x.Domains)
                 .NotEmpty()
                 .WithMessage("Book must belong to at least one domain.");
@@ -23,6 +32,14 @@ namespace ServiceLayer.Validators
                 .WithMessage("A book cannot be explicitly assigned to domains that are in an ancestor-descendant relationship.");
         }
 
+        /// <summary>
+        /// Validates that no two domains in the collection are in an ancestor-descendant relationship.
+        /// </summary>
+        /// <param name="domains">The collection of domains to validate.</param>
+        /// <returns>
+        /// <c>true</c> if no domains in the collection are in an ancestor-descendant relationship;
+        /// otherwise, <c>false</c>.
+        /// </returns>
         private bool HaveValidDomainRelationships(ICollection<Domain> domains)
         {
             if (domains.Count <= 1)

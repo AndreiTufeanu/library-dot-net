@@ -9,8 +9,16 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Validators
 {
+    /// <summary>
+    /// Validator for <see cref="Borrowing"/> entities that enforces business rules
+    /// related to book borrowing transactions.
+    /// </summary>
     public class BorrowingValidator : AbstractValidator<Borrowing>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BorrowingValidator"/> class
+        /// and configures the validation rules.
+        /// </summary>
         public BorrowingValidator()
         {
             // Due date must be after borrow date
@@ -46,6 +54,13 @@ namespace ServiceLayer.Validators
                 .WithMessage("When borrowing 3 or more books, they must belong to at least 2 distinct domains.");
         }
 
+        /// <summary>
+        /// Validates that all borrowed book copies are from distinct books.
+        /// </summary>
+        /// <param name="bookCopies">The collection of book copies to validate.</param>
+        /// <returns>
+        /// <c>true</c> if all book copies are from distinct books; otherwise, <c>false</c>.
+        /// </returns>
         private bool HaveDistinctBookTitles(ICollection<BookCopy> bookCopies)
         {
             if (bookCopies.Count <= 1)
@@ -60,6 +75,14 @@ namespace ServiceLayer.Validators
             return distinctBookCount == bookCopies.Count;
         }
 
+        /// <summary>
+        /// Validates that when borrowing multiple books, there is sufficient domain diversity.
+        /// </summary>
+        /// <param name="bookCopies">The collection of book copies to validate.</param>
+        /// <returns>
+        /// <c>true</c> if borrowing fewer than 3 books, or if borrowing 3+ books with at least
+        /// 2 distinct domains; otherwise, <c>false</c>.
+        /// </returns>
         private bool HaveSufficientDomainDiversity(ICollection<BookCopy> bookCopies)
         {
             if (bookCopies.Count < 3)

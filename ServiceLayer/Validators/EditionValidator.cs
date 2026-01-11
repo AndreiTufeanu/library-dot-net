@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Validators
 {
+    /// <summary>
+    /// Validator for <see cref="Edition"/> entities that enforces business rules
+    /// related to edition publication dates.
+    /// </summary>
     public class EditionValidator : AbstractValidator<Edition>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditionValidator"/> class
+        /// and configures the validation rules.
+        /// </summary>
         public EditionValidator()
         {
             // Publication date cannot be in the future
