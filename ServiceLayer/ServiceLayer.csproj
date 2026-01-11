@@ -113,6 +113,7 @@
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceContracts\HelperServiceContracts\IBookHelperService.cs" />
+    <Compile Include="ServiceContracts\HelperServiceContracts\IDomainHelperService.cs" />
     <Compile Include="ServiceContracts\IAuthorService.cs" />
     <Compile Include="ServiceContracts\IBookCopyService.cs" />
     <Compile Include="ServiceContracts\IBookService.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Services\HelperServices\BookHelperService.cs" />
     <Compile Include="ServiceContracts\HelperServiceContracts\IBorrowingHelperService.cs" />
     <Compile Include="Services\HelperServices\BorrowingHelperService.cs" />
+    <Compile Include="Services\HelperServices\DomainHelperService.cs" />
     <Compile Include="Services\LibrarianService.cs" />
     <Compile Include="Services\ReaderService.cs" />
     <Compile Include="Validators\BookValidator.cs" />
