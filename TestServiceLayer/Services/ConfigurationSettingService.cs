@@ -213,6 +213,75 @@ namespace TestServiceLayer.Services
         #region Reader Constants Tests
 
         [TestMethod]
+        public async Task GetSameBookDelayDaysAsync_ForRegularReader_ShouldReturnBaseValue()
+        {
+            // Arrange
+            var baseValue = 7;
+            object cachedValue = null;
+            var cacheEntry = Mock.Of<ICacheEntry>();
+
+            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
+                .Returns(false);
+            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
+                .Returns(cacheEntry);
+
+            _repositoryMock.Setup(r => r.GetIntValueAsync(ConfigurationConstants.SameBookDelayDays, It.IsAny<int>()))
+                .ReturnsAsync(baseValue);
+
+            // Act
+            var result = await _service.GetSameBookDelayDaysAsync(forLibrarian: false);
+
+            // Assert
+            result.Should().Be(baseValue);
+        }
+
+        [TestMethod]
+        public async Task GetSameBookDelayDaysAsync_WithOddNumberForLibrarian_ShouldHandleIntegerDivision()
+        {
+            // Arrange
+            var baseValue = 7;
+            object cachedValue = null;
+            var cacheEntry = Mock.Of<ICacheEntry>();
+
+            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
+                .Returns(false);
+            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
+                .Returns(cacheEntry);
+
+            _repositoryMock.Setup(r => r.GetIntValueAsync(ConfigurationConstants.SameBookDelayDays, It.IsAny<int>()))
+                .ReturnsAsync(baseValue);
+
+            // Act
+            var result = await _service.GetSameBookDelayDaysAsync(forLibrarian: true);
+
+            // Assert
+            result.Should().Be(3);
+        }
+
+        [TestMethod]
+        public async Task GetBorrowingPeriodDaysAsync_ShouldReturnRepositoryValue()
+        {
+            // Arrange
+            var expectedValue = 30;
+            object cachedValue = null;
+            var cacheEntry = Mock.Of<ICacheEntry>();
+
+            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
+                .Returns(false);
+            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
+                .Returns(cacheEntry);
+
+            _repositoryMock.Setup(r => r.GetIntValueAsync(ConfigurationConstants.BorrowingPeriodDays, It.IsAny<int>()))
+                .ReturnsAsync(expectedValue);
+
+            // Act
+            var result = await _service.GetBorrowingPeriodDaysAsync();
+
+            // Assert
+            result.Should().Be(expectedValue);
+        }
+
+        [TestMethod]
         public async Task GetMaxBooksInPeriodAsync_ForRegularReader_ShouldReturnBaseValue()
         {
             // Arrange
@@ -302,32 +371,6 @@ namespace TestServiceLayer.Services
 
             // Assert
             result.Should().Be(baseValue / 2);
-        }
-
-        [TestMethod]
-        public async Task GetBorrowingPeriodAsync_ShouldReturnTimeSpanFromDays()
-        {
-            // Arrange
-            double days = 30.0;
-            object cachedValue = null;
-
-            var cacheEntry = Mock.Of<ICacheEntry>();
-
-            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
-                .Returns(false);
-            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
-                .Returns(cacheEntry);
-
-            _repositoryMock.Setup(r => r.GetDoubleValueAsync(
-                    ConfigurationConstants.BorrowingPeriodDays, 
-                    It.IsAny<double>()))
-                .ReturnsAsync(days);
-
-            // Act
-            var result = await _service.GetBorrowingPeriodAsync();
-
-            // Assert
-            result.Should().Be(TimeSpan.FromDays(days));
         }
 
         [TestMethod]
@@ -515,52 +558,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task GetSameBookDelayAsync_ForRegularReader_ShouldReturnBaseTimeSpan()
-        {
-            // Arrange
-            var days = 7.0;
-            object cachedValue = null;
-            var cacheEntry = Mock.Of<ICacheEntry>();
-
-            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
-                .Returns(false);
-            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
-                .Returns(cacheEntry);
-
-            _repositoryMock.Setup(r => r.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays, It.IsAny<double>()))
-                .ReturnsAsync(days);
-
-            // Act
-            var result = await _service.GetSameBookDelayAsync(forLibrarian: false);
-
-            // Assert
-            result.Should().Be(TimeSpan.FromDays(days));
-        }
-
-        [TestMethod]
-        public async Task GetSameBookDelayAsync_ForLibrarian_ShouldReturnHalfTimeSpan()
-        {
-            // Arrange
-            var days = 7.0;
-            object cachedValue = null;
-            var cacheEntry = Mock.Of<ICacheEntry>();
-
-            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
-                .Returns(false);
-            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
-                .Returns(cacheEntry);
-
-            _repositoryMock.Setup(r => r.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays, It.IsAny<double>()))
-                .ReturnsAsync(days);
-
-            // Act
-            var result = await _service.GetSameBookDelayAsync(forLibrarian: true);
-
-            // Assert
-            result.Should().Be(TimeSpan.FromDays(days / 2));
-        }
-
-        [TestMethod]
         public async Task GetMaxBooksPerDayAsync_ShouldReturnRepositoryValue()
         {
             // Arrange
@@ -658,29 +655,6 @@ namespace TestServiceLayer.Services
 
             // Assert
             result.Should().Be(7);
-        }
-
-        [TestMethod]
-        public async Task GetSameBookDelayAsync_WithDecimalDaysForLibrarian_ShouldReturnHalfDays()
-        {
-            // Arrange
-            var days = 7.5;
-            object cachedValue = null;
-            var cacheEntry = Mock.Of<ICacheEntry>();
-
-            _memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cachedValue))
-                .Returns(false);
-            _memoryCacheMock.Setup(m => m.CreateEntry(It.IsAny<object>()))
-                .Returns(cacheEntry);
-
-            _repositoryMock.Setup(r => r.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays, It.IsAny<double>()))
-                .ReturnsAsync(days);
-
-            // Act
-            var result = await _service.GetSameBookDelayAsync(forLibrarian: true);
-
-            // Assert
-            result.Should().Be(TimeSpan.FromDays(3.75));
         }
 
         [TestMethod]
