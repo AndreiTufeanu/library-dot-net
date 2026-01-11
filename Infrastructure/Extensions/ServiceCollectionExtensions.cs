@@ -80,6 +80,7 @@ namespace Infrastructure.Extensions
             // Register helper services
             services.AddScoped<IBookHelperService, BookHelperService>();
             services.AddScoped<IBorrowingHelperService, BorrowingHelperService>();
+            services.AddScoped<IDomainHelperService, DomainHelperService>();
 
             // Register main services
             services.AddScoped<IAuthorService, AuthorService>();
