@@ -66,42 +66,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Book>> FindByTitleAsync(string title)
-        {
-            return await _context.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Domains)
-                .Where(b => b.Title.ToLower().Contains(title.ToLower()))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Book>> FindByDomainAsync(Guid domainId)
-        {
-            return await _context.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Domains)
-                .Where(b => b.Domains.Any(d => d.Id == domainId))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Book>> FindByAuthorAsync(Guid authorId)
-        {
-            return await _context.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Domains)
-                .Where(b => b.Authors.Any(a => a.Id == authorId))
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Book>> GetAvailableForBorrowingAsync()
-        {
-            var books = await _context.Books
-                .Include(b => b.Editions.Select(e => e.BookCopies))
-                .ToListAsync();
-
-            return books.Where(b => b.IsAvailableForBorrowing()).ToList();
-        }
-
         public async Task<bool> HasPhysicalCopiesAsync(Guid id)
         {
             return await _context.Books

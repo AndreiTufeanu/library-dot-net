@@ -73,14 +73,6 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(d => d.Name.ToLower() == name.ToLower());
         }
 
-        public async Task<IEnumerable<Domain>> GetRootDomainsAsync()
-        {
-            return await _context.Domains
-                .Include(d => d.Subdomains)
-                .Where(d => d.ParentDomain == null)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Domain>> GetSubdomainsAsync(Guid parentDomainId)
         {
             return await _context.Domains

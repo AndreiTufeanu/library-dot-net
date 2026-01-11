@@ -64,54 +64,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<BookCopy>> GetBorrowableCopiesByBookAsync(Guid bookId)
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition.Book)
-                .Where(bc => bc.Edition.Book.Id == bookId && bc.IsBorrowable())
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BookCopy>> GetBorrowableCopiesByEditionAsync(Guid editionId)
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition)
-                .Where(bc => bc.Edition.Id == editionId && bc.IsBorrowable())
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BookCopy>> GetByBookAsync(Guid bookId)
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition)
-                .Where(bc => bc.Edition.Book.Id == bookId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BookCopy>> GetByEditionAsync(Guid editionId)
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition)
-                .Where(bc => bc.Edition.Id == editionId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BookCopy>> GetAvailableCopiesAsync()
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition.Book)
-                .Where(bc => bc.IsAvailable)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<BookCopy>> GetLectureRoomOnlyCopiesAsync()
-        {
-            return await _context.BookCopies
-                .Include(bc => bc.Edition.Book)
-                .Where(bc => bc.IsLectureRoomOnly)
-                .ToListAsync();
-        }
-
         public async Task<bool> IsCurrentlyBorrowedAsync(Guid bookCopyId)
         {
             return await _context.Borrowings

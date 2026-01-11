@@ -17,12 +17,6 @@ namespace DomainModel.RepositoryContracts
         Task<Domain> FindByNameAsync(string name);
 
         /// <summary>
-        /// Gets root domains (domains without parent)
-        /// </summary>
-        /// <returns>A collection of root domains</returns>
-        Task<IEnumerable<Domain>> GetRootDomainsAsync();
-
-        /// <summary>
         /// Gets subdomains of a specific domain
         /// </summary>
         /// <param name="parentDomainId">The parent domain identifier</param>

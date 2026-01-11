@@ -10,46 +10,6 @@ namespace DomainModel.RepositoryContracts
     public interface IBookCopyRepository : IRepository<BookCopy>
     {
         /// <summary>
-        /// Gets borrowable copies for a specific book
-        /// </summary>
-        /// <param name="bookId">The book identifier</param>
-        /// <returns>A collection of book copies that are currently borrowable for the specified book</returns>
-        Task<IEnumerable<BookCopy>> GetBorrowableCopiesByBookAsync(Guid bookId);
-
-        /// <summary>
-        /// Gets borrowable copies for a specific edition
-        /// </summary>
-        /// <param name="editionId">The edition identifier</param>
-        /// <returns>A collection of book copies that are currently borrowable for the specified edition</returns>
-        Task<IEnumerable<BookCopy>> GetBorrowableCopiesByEditionAsync(Guid editionId);
-
-        /// <summary>
-        /// Gets all copies for a specific book
-        /// </summary>
-        /// <param name="bookId">The book identifier</param>
-        /// <returns>A collection of all book copies for the specified book</returns>
-        Task<IEnumerable<BookCopy>> GetByBookAsync(Guid bookId);
-
-        /// <summary>
-        /// Gets all copies for a specific edition
-        /// </summary>
-        /// <param name="editionId">The edition identifier</param>
-        /// <returns>A collection of all book copies for the specified edition</returns>
-        Task<IEnumerable<BookCopy>> GetByEditionAsync(Guid editionId);
-
-        /// <summary>
-        /// Gets available (not borrowed) copies
-        /// </summary>
-        /// <returns>A collection of all book copies that are currently available (not borrowed)</returns>
-        Task<IEnumerable<BookCopy>> GetAvailableCopiesAsync();
-
-        /// <summary>
-        /// Gets copies restricted to lecture room only
-        /// </summary>
-        /// <returns>A collection of book copies that are restricted to lecture room use only</returns>
-        Task<IEnumerable<BookCopy>> GetLectureRoomOnlyCopiesAsync();
-
-        /// <summary>
         /// Checks if a book copy is currently borrowed
         /// </summary>
         /// <param name="bookCopyId">The book copy identifier</param>

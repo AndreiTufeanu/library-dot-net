@@ -63,13 +63,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Reader>> FindByLastNameAsync(string lastName)
-        {
-            return await _context.Readers
-                .Where(r => r.LastName.ToLower() == lastName.ToLower())
-                .ToListAsync();
-        }
-
         public async Task<Reader> FindByEmailAsync(string email)
         {
             return await _context.Readers

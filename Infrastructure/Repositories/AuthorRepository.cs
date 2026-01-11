@@ -71,13 +71,6 @@ namespace Infrastructure.Repositories
                     a.LastName.ToLower() == lastName.ToLower());
         }
 
-        public async Task<IEnumerable<Author>> FindByLastNameAsync(string lastName)
-        {
-            return await _context.Authors
-                .Where(a => a.LastName.ToLower() == lastName.ToLower())
-                .ToListAsync();
-        }
-
         public async Task<bool> HasBooksAsync(Guid id)
         {
             return await _context.Authors

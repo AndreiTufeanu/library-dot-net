@@ -10,13 +10,6 @@ namespace DomainModel.RepositoryContracts
     public interface IReaderRepository : IRepository<Reader>
     {
         /// <summary>
-        /// Finds readers by last name (case-insensitive)
-        /// </summary>
-        /// <param name="lastName">The last name to search for</param>
-        /// <returns>A collection of readers with the specified last name</returns>
-        Task<IEnumerable<Reader>> FindByLastNameAsync(string lastName);
-
-        /// <summary>
         /// Finds reader by email (case-insensitive)
         /// </summary>
         /// <param name="email">The email address to search for</param>

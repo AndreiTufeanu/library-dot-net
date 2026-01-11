@@ -18,13 +18,6 @@ namespace DomainModel.RepositoryContracts
         Task<Author> FindByNameAsync(string firstName, string lastName);
 
         /// <summary>
-        /// Finds authors by last name (case-insensitive)
-        /// </summary>
-        /// <param name="lastName">The last name to search for</param>
-        /// <returns>A collection of authors with the specified last name</returns>
-        Task<IEnumerable<Author>> FindByLastNameAsync(string lastName);
-
-        /// <summary>
         /// Checks if an author has associated books
         /// </summary>
         /// <param name="id">The author identifier</param>

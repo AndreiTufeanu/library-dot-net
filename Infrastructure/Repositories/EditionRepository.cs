@@ -66,33 +66,6 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<Edition>> GetByBookAsync(Guid bookId)
-        {
-            return await _context.Editions
-                .Include(e => e.Book)
-                .Include(e => e.BookType)
-                .Where(e => e.Book.Id == bookId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Edition>> GetByBookTypeAsync(Guid bookTypeId)
-        {
-            return await _context.Editions
-                .Include(e => e.Book)
-                .Include(e => e.BookType)
-                .Where(e => e.BookType.Id == bookTypeId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Edition>> GetPublishedBetweenAsync(DateTime startDate, DateTime endDate)
-        {
-            return await _context.Editions
-                .Include(e => e.Book)
-                .Include(e => e.BookType)
-                .Where(e => e.PublicationDate >= startDate && e.PublicationDate <= endDate)
-                .ToListAsync();
-        }
-
         public async Task<bool> HasCopiesAsync(Guid id)
         {
             return await _context.Editions
