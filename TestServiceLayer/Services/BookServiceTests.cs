@@ -121,7 +121,7 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public void Constructor_WhenLoggerIsNull_ShouldNotThrow()
+        public void Constructor_WhenLoggerIsNull_ShouldThrow()
         {
             // Arrange
             var unitOfWork = Mock.Of<IUnitOfWork>();
@@ -133,7 +133,7 @@ namespace TestServiceLayer.Services
             Action act = () => new BookService(unitOfWork, validator, bookHelperService, logger);
 
             // Assert
-            act.Should().NotThrow();
+            act.Should().Throw<ArgumentNullException>();
         }
 
         #endregion
