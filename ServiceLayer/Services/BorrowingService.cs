@@ -51,11 +51,6 @@ namespace ServiceLayer.Services
                     throw new NotFoundException(nameof(Librarian), borrowing.Librarian?.Id);
                 }
 
-                if (!borrowing.BookCopies.Any())
-                {
-                    throw new AggregateValidationException("At least one book copy must be borrowed.");
-                }
-
                 foreach (var bookCopy in borrowing.BookCopies)
                 {
                     var existingCopy = await _unitOfWork.BookCopies.GetByIdAsync(bookCopy.Id);
