@@ -57,8 +57,8 @@ namespace ServiceLayer.Services.HelperServices
 
             var startDate = borrowing.BorrowDate.AddDays(-windowDays);
             var borrowedCount = await _unitOfWork.Borrowings.GetCountByReaderInPeriodAsync(
-                                                                    borrowing.Reader.Id, 
-                                                                    startDate, 
+                                                                    borrowing.Reader.Id,
+                                                                    startDate,
                                                                     borrowing.BorrowDate);
             if (borrowedCount > maxBooksInPeriod)
             {
@@ -124,7 +124,9 @@ namespace ServiceLayer.Services.HelperServices
         public async Task ValidateSameBookDelayAsync(Borrowing borrowing)
         {
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
-            var sameBookDelay = await _configService.GetSameBookDelayAsync(isLibrarianReader);
+
+            var sameBookDelayDays = await _configService.GetSameBookDelayDaysAsync(isLibrarianReader);
+            var sameBookDelay = TimeSpan.FromDays(sameBookDelayDays);
 
             var bookIds = new HashSet<Guid>();
             foreach (var copy in borrowing.BookCopies)
@@ -147,7 +149,7 @@ namespace ServiceLayer.Services.HelperServices
                     {
                         var book = await _unitOfWork.Books.GetByIdAsync(bookId);
                         var bookTitle = book?.Title ?? "Unknown Book";
-                        throw new AggregateValidationException($"Reader cannot borrow '{bookTitle}' again within {sameBookDelay.TotalDays} days. Last borrowed: {lastBorrowDate.Value:yyyy-MM-dd}.");
+                        throw new AggregateValidationException($"Reader cannot borrow '{bookTitle}' again within {sameBookDelayDays} days. Last borrowed: {lastBorrowDate.Value:yyyy-MM-dd}.");
                     }
                 }
             }

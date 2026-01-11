@@ -41,10 +41,10 @@ namespace ServiceLayer.ServiceContracts
         Task<int> GetMaxBooksInPeriodWindowDaysAsync(bool forLibrarian = false);
 
         /// <summary>
-        /// Gets the maximum loan duration for a single borrowing
+        /// Gets the maximum loan duration for a single borrowing (in days)
         /// </summary>
-        /// <returns>The configured borrowing period as a TimeSpan</returns>
-        Task<TimeSpan> GetBorrowingPeriodAsync();
+        /// <returns>The configured borrowing period in days</returns>
+        Task<int> GetBorrowingPeriodDaysAsync();
 
         /// <summary>
         /// Gets the maximum number of books per single borrowing transaction
@@ -80,11 +80,11 @@ namespace ServiceLayer.ServiceContracts
         Task<int> GetExtensionWindowMonthsAsync();
 
         /// <summary>
-        /// Gets the minimum waiting time before the same book can be borrowed again
+        /// Gets the minimum waiting time (in days) before the same book can be borrowed again
         /// </summary>
         /// <param name="forLibrarian">Whether to apply librarian privileges (halved delay)</param>
-        /// <returns>The configured same book delay as a TimeSpan</returns>
-        Task<TimeSpan> GetSameBookDelayAsync(bool forLibrarian = false);
+        /// <returns>The configured same book delay in days</returns>
+        Task<int> GetSameBookDelayDaysAsync(bool forLibrarian = false);
 
         /// <summary>
         /// Gets the maximum books a reader can borrow in a single day
@@ -113,6 +113,5 @@ namespace ServiceLayer.ServiceContracts
         Task RefreshSettingAsync(string key);
 
         #endregion
-
     }
 }

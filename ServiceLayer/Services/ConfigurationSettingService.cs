@@ -21,7 +21,7 @@ namespace ServiceLayer.Services
         public ConfigurationSettingService(IConfigurationSettingRepository repository, IMemoryCache cache)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _cache = cache ?? throw new ArgumentNullException(nameof(_cache));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
             // Initialize default values using ConfigurationConstants
             _defaultValues = new ConcurrentDictionary<string, object>
@@ -98,14 +98,12 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue / 2 : baseValue;
         }
 
-        public async Task<TimeSpan> GetBorrowingPeriodAsync()
+        public async Task<int> GetBorrowingPeriodDaysAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
             {
-                var defaultVal = _defaultValues[ConfigurationConstants.BorrowingPeriodDays];
-                var defaultAsDouble = Convert.ToDouble(defaultVal);
-                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.BorrowingPeriodDays, defaultAsDouble);
-                return TimeSpan.FromDays(days);
+                return await _repository.GetIntValueAsync(ConfigurationConstants.BorrowingPeriodDays,
+                    (int)_defaultValues[ConfigurationConstants.BorrowingPeriodDays]);
             });
         }
 
@@ -160,17 +158,15 @@ namespace ServiceLayer.Services
             });
         }
 
-        public async Task<TimeSpan> GetSameBookDelayAsync(bool forLibrarian = false)
+        public async Task<int> GetSameBookDelayDaysAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.SameBookDelayDays, async () =>
             {
-                var defaultVal = _defaultValues[ConfigurationConstants.SameBookDelayDays];
-                var defaultAsDouble = Convert.ToDouble(defaultVal);
-                var days = await _repository.GetDoubleValueAsync(ConfigurationConstants.SameBookDelayDays, defaultAsDouble);
-                return TimeSpan.FromDays(days);
+                return await _repository.GetIntValueAsync(ConfigurationConstants.SameBookDelayDays,
+                    (int)_defaultValues[ConfigurationConstants.SameBookDelayDays]);
             });
 
-            return forLibrarian ? TimeSpan.FromDays(baseValue.TotalDays / 2) : baseValue;
+            return forLibrarian ? baseValue / 2 : baseValue;
         }
 
         public async Task<int> GetMaxBooksPerDayAsync()

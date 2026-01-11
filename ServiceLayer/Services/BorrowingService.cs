@@ -78,8 +78,8 @@ namespace ServiceLayer.Services
                 await _borrowingHelperService.ValidateMaxBooksPerDayAsync(borrowing);
                 await _borrowingHelperService.ValidateLibrarianLendingLimitAsync(borrowing);
 
-                var borrowingPeriod = await _configService.GetBorrowingPeriodAsync();
-                borrowing.DueDate = borrowing.BorrowDate.Add(borrowingPeriod);
+                var borrowingPeriod = await _configService.GetBorrowingPeriodDaysAsync();
+                borrowing.DueDate = borrowing.BorrowDate.AddDays(borrowingPeriod);
 
                 foreach (var bookCopy in borrowing.BookCopies)
                 {
