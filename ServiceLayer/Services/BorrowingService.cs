@@ -39,23 +39,19 @@ namespace ServiceLayer.Services
         {
             return await ExecuteServiceOperationAsync(async () =>
             {
-                // Basic validation
                 ValidationHelper.Validate(borrowing, _validator);
 
-                // Verify reader exists
-                if (borrowing.Reader == null || !await _unitOfWork.Readers.ExistsAsync(borrowing.Reader.Id))
+                if (!await _unitOfWork.Readers.ExistsAsync(borrowing.Reader.Id))
                 {
                     throw new NotFoundException(nameof(Reader), borrowing.Reader?.Id);
                 }
 
-                // Verify librarian exists
-                if (borrowing.Librarian == null || !await _unitOfWork.Librarians.ExistsAsync(borrowing.Librarian.Id))
+                if (!await _unitOfWork.Librarians.ExistsAsync(borrowing.Librarian.Id))
                 {
                     throw new NotFoundException(nameof(Librarian), borrowing.Librarian?.Id);
                 }
 
-                // Verify all book copies exist and are available
-                if (borrowing.BookCopies == null || !borrowing.BookCopies.Any())
+                if (!borrowing.BookCopies.Any())
                 {
                     throw new AggregateValidationException("At least one book copy must be borrowed.");
                 }
