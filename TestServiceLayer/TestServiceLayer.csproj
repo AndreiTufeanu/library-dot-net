@@ -126,6 +126,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ConfigurationConstantsTests.cs" />
     <Compile Include="Services\AuthorServiceTests.cs" />
     <Compile Include="HelperServices\BookHelperServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
