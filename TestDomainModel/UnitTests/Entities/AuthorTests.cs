@@ -84,7 +84,7 @@ namespace TestDomainModel.UnitTests.Entities
 
             // Assert
             validationResults.Should().Contain(vr =>
-                vr.ErrorMessage.Contains("Fist Name must have between"));
+                vr.ErrorMessage.Contains("First Name must have between"));
         }
 
         [TestMethod]
@@ -100,7 +100,7 @@ namespace TestDomainModel.UnitTests.Entities
 
             // Assert
             validationResults.Should().Contain(vr =>
-                vr.ErrorMessage.Contains("Fist Name must have between"));
+                vr.ErrorMessage.Contains("First Name must have between"));
         }
 
         [TestMethod]
