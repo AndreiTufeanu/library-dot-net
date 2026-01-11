@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public ConfigurationSettingRepository(LibraryContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<ConfigurationSetting> GetByIdAsync(Guid id)
@@ -65,13 +65,6 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(cs => cs.Key == key);
         }
 
-        public async Task<IEnumerable<ConfigurationSetting>> GetByCategoryAsync(string category)
-        {
-            return await _context.ConfigurationSettings
-                .Where(cs => cs.Category == category)
-                .ToListAsync();
-        }
-
         public async Task<string> GetValueAsync(string key, string defaultValue = null)
         {
             var setting = await GetByKeyAsync(key);
@@ -82,24 +75,6 @@ namespace Infrastructure.Repositories
         {
             var value = await GetValueAsync(key);
             return int.TryParse(value, out int result) ? result : defaultValue;
-        }
-
-        public async Task<double> GetDoubleValueAsync(string key, double defaultValue = 0.0)
-        {
-            var value = await GetValueAsync(key);
-            return double.TryParse(value, out double result) ? result : defaultValue;
-        }
-
-        public async Task<TimeSpan> GetTimeSpanValueAsync(string key, TimeSpan defaultValue)
-        {
-            var value = await GetValueAsync(key);
-            return TimeSpan.TryParse(value, out TimeSpan result) ? result : defaultValue;
-        }
-
-        public async Task<bool> GetBoolValueAsync(string key, bool defaultValue = false)
-        {
-            var value = await GetValueAsync(key);
-            return bool.TryParse(value, out bool result) ? result : defaultValue;
         }
     }
 }
