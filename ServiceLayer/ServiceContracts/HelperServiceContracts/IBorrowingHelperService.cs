@@ -72,56 +72,6 @@ namespace ServiceLayer.ServiceContracts.HelperServiceContracts
         /// <returns>True if the reader is also a librarian; otherwise, false</returns>
         Task<bool> IsReaderAlsoLibrarianAsync(Guid readerId);
 
-        /// <summary>
-        /// Gets the number of books borrowed by a reader within a specific period
-        /// </summary>
-        /// <param name="readerId">The reader identifier</param>
-        /// <param name="startDate">The start date of the period</param>
-        /// <param name="endDate">The end date of the period</param>
-        /// <returns>The number of books borrowed by the reader within the specified period</returns>
-        Task<int> GetBooksBorrowedInPeriodAsync(Guid readerId, DateTime startDate, DateTime endDate);
-
-        /// <summary>
-        /// Gets the number of books borrowed by a reader from a specific domain within a time period
-        /// </summary>
-        /// <param name="readerId">The reader identifier</param>
-        /// <param name="domainId">The domain identifier</param>
-        /// <param name="startDate">The start date for counting</param>
-        /// <returns>The number of books borrowed by the reader from the specified domain since the start date</returns>
-        Task<int> GetBooksBorrowedFromDomainInPeriodAsync(Guid readerId, Guid domainId, DateTime startDate);
-
-        /// <summary>
-        /// Gets the total extension days used by a reader within a specific period
-        /// </summary>
-        /// <param name="readerId">The reader identifier</param>
-        /// <param name="startDate">The start date for calculating total extensions</param>
-        /// <returns>The sum of all extension days used by the reader since the start date</returns>
-        Task<int> GetTotalExtensionDaysInPeriodAsync(Guid readerId, DateTime startDate);
-
-        /// <summary>
-        /// Gets the last borrow date for a specific book by a reader
-        /// </summary>
-        /// <param name="readerId">The reader identifier</param>
-        /// <param name="bookId">The book identifier</param>
-        /// <returns>The date of the last borrowing of the specified book by the reader, or null if never borrowed</returns>
-        Task<DateTime?> GetLastBorrowDateForBookAsync(Guid readerId, Guid bookId);
-
-        /// <summary>
-        /// Gets the number of books borrowed by a reader on a specific date
-        /// </summary>
-        /// <param name="readerId">The reader identifier</param>
-        /// <param name="date">The date to check</param>
-        /// <returns>The number of books borrowed by the reader on the specified date</returns>
-        Task<int> GetBooksBorrowedOnDateAsync(Guid readerId, DateTime date);
-
-        /// <summary>
-        /// Gets the number of books lent by a librarian on a specific date
-        /// </summary>
-        /// <param name="librarianId">The librarian identifier</param>
-        /// <param name="date">The date to check</param>
-        /// <returns>The number of books lent by the librarian on the specified date</returns>
-        Task<int> GetBooksLentByLibrarianOnDateAsync(Guid librarianId, DateTime date);
-
         #endregion
     }
 }
