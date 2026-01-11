@@ -154,29 +154,14 @@ namespace ServiceLayer.Services
                     throw new BusinessRuleException("Cannot delete a finished borrowing.");
                 }
 
-                await _unitOfWork.BeginTransactionAsync();
-                try
+                var success = await _unitOfWork.Borrowings.DeleteAsync(id);
+                if (!success)
                 {
-                    foreach (var bookCopy in borrowing.BookCopies)
-                    {
-                        bookCopy.MarkAsReturned();
-                    }
-
-                    var success = await _unitOfWork.Borrowings.DeleteAsync(id);
-                    if (!success)
-                    {
-                        throw new InvalidOperationException("Failed to delete borrowing");
-                    }
-
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitAsync();
-                    return true;
+                    throw new InvalidOperationException("Failed to delete borrowing");
                 }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                    throw;
-                }
+
+                await _unitOfWork.SaveChangesAsync();
+                return true;
 
             }, nameof(DeleteAsync));
         }
