@@ -330,12 +330,8 @@ namespace TestServiceLayer.Services
                 .ReturnsAsync(false);
             _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
                 .ReturnsAsync(true);
-            _unitOfWorkMock.Setup(u => u.BeginTransactionAsync())
-                .Returns(Task.CompletedTask);
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
                 .ReturnsAsync(1);
-            _unitOfWorkMock.Setup(u => u.CommitAsync())
-                .Returns(Task.CompletedTask);
 
             // Act
             var result = await _service.DeleteAsync(authorId);
@@ -394,8 +390,6 @@ namespace TestServiceLayer.Services
                 .ReturnsAsync(false);
             _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
                 .ReturnsAsync(false);
-            _unitOfWorkMock.Setup(u => u.BeginTransactionAsync())
-                .Returns(Task.CompletedTask);
 
             // Act
             var result = await _service.DeleteAsync(authorId);
@@ -406,7 +400,7 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task DeleteAsync_WhenExceptionOccursDuringTransaction_ShouldCallRollbackAndRethrow()
+        public async Task DeleteAsync_WhenExceptionOccursDuringTransaction_ShouldThrow()
         {
             // Arrange
             var authorId = Guid.NewGuid();
@@ -418,11 +412,6 @@ namespace TestServiceLayer.Services
                 .ReturnsAsync(false);
             _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
                 .ThrowsAsync(new InvalidOperationException("Database constraint violation"));
-
-            _unitOfWorkMock.Setup(u => u.BeginTransactionAsync())
-                .Returns(Task.CompletedTask);
-            _unitOfWorkMock.Setup(u => u.RollbackAsync())
-                .Returns(Task.CompletedTask);
 
             // Act
             var result = await _service.DeleteAsync(authorId);
