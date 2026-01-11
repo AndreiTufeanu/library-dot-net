@@ -31,7 +31,6 @@ namespace ServiceLayer.Services
             {
                 ValidationHelper.Validate(author);
 
-                // Check if author with same name already exists
                 var existingAuthor = await _unitOfWork.Authors.FindByNameAsync(
                     author.FirstName,
                     author.LastName);
@@ -83,7 +82,6 @@ namespace ServiceLayer.Services
 
                 ValidationHelper.Validate(author);
 
-                // Check if another author with same name exists
                 var existingAuthor = await _unitOfWork.Authors.FindByNameAsync(
                     author.FirstName,
                     author.LastName);
