@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
-using ServiceLayer.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

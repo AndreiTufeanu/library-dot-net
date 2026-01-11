@@ -124,7 +124,6 @@
     <Compile Include="ServiceContracts\ILibrarianService.cs" />
     <Compile Include="ServiceContracts\IReaderService.cs" />
     <Compile Include="ServiceContracts\IService.cs" />
-    <Compile Include="Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="Services\AuthorService.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Services\BookCopyService.cs" />
