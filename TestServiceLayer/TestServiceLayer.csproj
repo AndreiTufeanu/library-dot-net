@@ -136,7 +136,7 @@
     <Compile Include="Services\BookServiceTests.cs" />
     <Compile Include="Services\BookTypeServiceTests.cs" />
     <Compile Include="Services\BorrowingServiceTests.cs" />
-    <Compile Include="Services\ConfigurationSettingService.cs" />
+    <Compile Include="Services\ConfigurationSettingServiceTests.cs" />
     <Compile Include="Services\DomainServiceTests.cs" />
     <Compile Include="Services\EditionServiceTests.cs" />
     <Compile Include="Services\LibrarianServiceTests.cs" />
