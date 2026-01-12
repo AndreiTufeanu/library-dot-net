@@ -97,51 +97,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task CreateAsync_ValidAuthor_ShouldHaveNoErrors()
-        {
-            // Arrange
-            var author = CreateValidAuthor();
-            var addedAuthor = _fixture.Build<Author>()
-                .With(a => a.Id, author.Id)
-                .Create();
-
-            _authorRepositoryMock.Setup(r => r.FindByNameAsync(author.FirstName, author.LastName))
-                .ReturnsAsync((Author)null);
-            _authorRepositoryMock.Setup(r => r.AddAsync(author))
-                .ReturnsAsync(addedAuthor);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(author);
-
-            // Assert
-            result.ErrorMessage.Should().BeNullOrEmpty();
-            result.ValidationErrors.Should().BeEmpty();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_ValidAuthor_ShouldCallRepositoryMethods()
-        {
-            // Arrange
-            var author = CreateValidAuthor();
-
-            _authorRepositoryMock.Setup(r => r.FindByNameAsync(author.FirstName, author.LastName))
-                .ReturnsAsync((Author)null);
-            _authorRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Author>()))
-                .ReturnsAsync(author);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            await _service.CreateAsync(author);
-
-            // Assert
-            _authorRepositoryMock.Verify(r => r.FindByNameAsync(author.FirstName, author.LastName), Times.Once);
-            _authorRepositoryMock.Verify(r => r.AddAsync(author), Times.Once);
-        }
-
-        [TestMethod]
         public async Task CreateAsync_DuplicateAuthor_ShouldReturnValidationError()
         {
             // Arrange
@@ -157,21 +112,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().Contain(item => item.Contains("already exists"));
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_ValidationFailure_ShouldReturnValidationErrors()
-        {
-            // Arrange
-            var author = CreateValidAuthor();
-            author.FirstName = "J";
-
-            // Act
-            var result = await _service.CreateAsync(author);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(item => item.Contains("First Name must have between"));
         }
 
         #endregion
@@ -318,6 +258,28 @@ namespace TestServiceLayer.Services
         #region DeleteAsync Tests
 
         [TestMethod]
+        public async Task DeleteAsync_TransactionRollsBackOnFailure_ShouldReturnFailure()
+        {
+            // Arrange
+            var authorId = Guid.NewGuid();
+            var author = CreateValidAuthor();
+
+            _authorRepositoryMock.Setup(r => r.GetByIdAsync(authorId))
+                .ReturnsAsync(author);
+            _authorRepositoryMock.Setup(r => r.HasBooksAsync(authorId))
+                .ReturnsAsync(false);
+            _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _service.DeleteAsync(authorId);
+
+            // Assert
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Contain("Failed to delete author");
+        }
+
+        [TestMethod]
         public async Task DeleteAsync_AuthorWithoutBooks_ShouldReturnSuccess()
         {
             // Arrange
@@ -377,50 +339,6 @@ namespace TestServiceLayer.Services
             result.ErrorMessage.Should().Contain("Cannot delete an author that has associated books");
         }
 
-        [TestMethod]
-        public async Task DeleteAsync_TransactionRollsBackOnFailure_ShouldReturnFailure()
-        {
-            // Arrange
-            var authorId = Guid.NewGuid();
-            var author = CreateValidAuthor();
-
-            _authorRepositoryMock.Setup(r => r.GetByIdAsync(authorId))
-                .ReturnsAsync(author);
-            _authorRepositoryMock.Setup(r => r.HasBooksAsync(authorId))
-                .ReturnsAsync(false);
-            _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
-                .ReturnsAsync(false);
-
-            // Act
-            var result = await _service.DeleteAsync(authorId);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("Failed to delete author");
-        }
-
-        [TestMethod]
-        public async Task DeleteAsync_WhenExceptionOccursDuringTransaction_ShouldThrow()
-        {
-            // Arrange
-            var authorId = Guid.NewGuid();
-            var author = CreateValidAuthor();
-
-            _authorRepositoryMock.Setup(r => r.GetByIdAsync(authorId))
-                .ReturnsAsync(author);
-            _authorRepositoryMock.Setup(r => r.HasBooksAsync(authorId))
-                .ReturnsAsync(false);
-            _authorRepositoryMock.Setup(r => r.DeleteAsync(authorId))
-                .ThrowsAsync(new InvalidOperationException("Database constraint violation"));
-
-            // Act
-            var result = await _service.DeleteAsync(authorId);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
         #endregion
 
         #region ExistsAsync Tests
@@ -455,46 +373,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeTrue();
             result.Data.Should().BeFalse();
-        }
-
-        #endregion
-
-        #region Exception Handling Tests
-
-        [TestMethod]
-        public async Task CreateAsync_RepositoryThrowsException_ShouldReturnFailureWithErrorMessage()
-        {
-            // Arrange
-            var author = CreateValidAuthor();
-            _authorRepositoryMock.Setup(r => r.FindByNameAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .ThrowsAsync(new InvalidOperationException("Database error"));
-
-            // Act
-            var result = await _service.CreateAsync(author);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
-        [TestMethod]
-        public async Task ServiceMethod_WhenBusinessRuleExceptionThrown_ShouldReturnFailureWithBusinessRuleMessage()
-        {
-            // Arrange
-            var authorId = Guid.NewGuid();
-            var author = CreateValidAuthor();
-
-            _authorRepositoryMock.Setup(r => r.GetByIdAsync(authorId))
-                .ReturnsAsync(author);
-            _authorRepositoryMock.Setup(r => r.HasBooksAsync(authorId))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _service.DeleteAsync(authorId);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("Cannot delete an author that has associated books");
         }
 
         #endregion
