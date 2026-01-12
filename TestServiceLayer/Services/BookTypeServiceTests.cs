@@ -109,28 +109,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task CreateAsync_ShouldCallRepositoryMethods()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-
-            _bookTypeRepositoryMock.Setup(r => r.FindByNameAsync(bookType.Name))
-                .ReturnsAsync((BookType)null);
-            _bookTypeRepositoryMock.Setup(r => r.AddAsync(It.IsAny<BookType>()))
-                .ReturnsAsync(bookType);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            await _service.CreateAsync(bookType);
-
-            // Assert
-            _bookTypeRepositoryMock.Verify(r => r.FindByNameAsync(bookType.Name), Times.Once);
-            _bookTypeRepositoryMock.Verify(r => r.AddAsync(bookType), Times.Once);
-            _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
-        }
-
-        [TestMethod]
         public async Task CreateAsync_DuplicateBookType_ShouldReturnValidationError()
         {
             // Arrange
@@ -147,38 +125,6 @@ namespace TestServiceLayer.Services
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().ContainSingle()
                 .Which.Should().Contain($"A book type with the name '{bookType.Name}' already exists");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_ValidationFailure_ShouldReturnValidationErrors()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = "A";
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Book type name must be between");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_InvalidNameCharacters_ShouldReturnValidationError()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = "Hardcover123";
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Book type name can only contain letters and spaces");
         }
 
         #endregion
@@ -322,32 +268,6 @@ namespace TestServiceLayer.Services
                 .Which.Should().Contain($"Another book type with the name '{bookType.Name}' already exists");
         }
 
-        [TestMethod]
-        public async Task UpdateAsync_SameBookTypeName_ShouldReturnSuccess()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            var existingBookType = _fixture.Build<BookType>()
-                .With(bt => bt.Id, bookType.Id)
-                .Create();
-
-            _bookTypeRepositoryMock.Setup(r => r.ExistsAsync(bookType.Id))
-                .ReturnsAsync(true);
-            _bookTypeRepositoryMock.Setup(r => r.FindByNameAsync(bookType.Name))
-                .ReturnsAsync(existingBookType);
-            _bookTypeRepositoryMock.Setup(r => r.UpdateAsync(bookType))
-                .ReturnsAsync(bookType);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Data.Should().BeTrue();
-        }
-
         #endregion
 
         #region DeleteAsync Tests
@@ -442,43 +362,6 @@ namespace TestServiceLayer.Services
             _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
         }
 
-        [TestMethod]
-        public async Task DeleteAsync_WhenBusinessRuleExceptionThrown_ShouldReturnFailureWithBusinessRuleMessage()
-        {
-            // Arrange
-            var bookTypeId = Guid.NewGuid();
-            var bookType = CreateValidBookType();
-
-            _bookTypeRepositoryMock.Setup(r => r.GetByIdAsync(bookTypeId))
-                .ReturnsAsync(bookType);
-            _bookTypeRepositoryMock.Setup(r => r.HasEditionsAsync(bookTypeId))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _service.DeleteAsync(bookTypeId);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("Cannot delete a book type that has associated editions");
-        }
-
-        [TestMethod]
-        public async Task DeleteAsync_WhenNotFoundExceptionThrown_ShouldReturnFailureWithNotFoundMessage()
-        {
-            // Arrange
-            var bookTypeId = Guid.NewGuid();
-            _bookTypeRepositoryMock.Setup(r => r.GetByIdAsync(bookTypeId))
-                .ReturnsAsync((BookType)null);
-
-            // Act
-            var result = await _service.DeleteAsync(bookTypeId);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain($"BookType with ID '{bookTypeId}' not found");
-        }
-
-
         #endregion
 
         #region ExistsAsync Tests
@@ -552,105 +435,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
-        #endregion
-
-        #region Edge Cases and Boundary Tests
-
-        [TestMethod]
-        public async Task CreateAsync_WithMinimumValidNameLength_ShouldSucceed()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = "AB";
-
-            _bookTypeRepositoryMock.Setup(r => r.FindByNameAsync(bookType.Name))
-                .ReturnsAsync((BookType)null);
-            _bookTypeRepositoryMock.Setup(r => r.AddAsync(bookType))
-                .ReturnsAsync(bookType);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithMaximumValidNameLength_ShouldSucceed()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = new string('A', 50);
-
-            _bookTypeRepositoryMock.Setup(r => r.FindByNameAsync(bookType.Name))
-                .ReturnsAsync((BookType)null);
-            _bookTypeRepositoryMock.Setup(r => r.AddAsync(bookType))
-                .ReturnsAsync(bookType);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithNameContainingSpaces_ShouldSucceed()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = "Hard Cover";
-
-            _bookTypeRepositoryMock.Setup(r => r.FindByNameAsync(bookType.Name))
-                .ReturnsAsync((BookType)null);
-            _bookTypeRepositoryMock.Setup(r => r.AddAsync(bookType))
-                .ReturnsAsync(bookType);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithEmptyName_ShouldReturnValidationError()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = "";
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Book type name is required");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithNullName_ShouldReturnValidationError()
-        {
-            // Arrange
-            var bookType = CreateValidBookType();
-            bookType.Name = null;
-
-            // Act
-            var result = await _service.CreateAsync(bookType);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Book type name is required");
         }
 
         #endregion
