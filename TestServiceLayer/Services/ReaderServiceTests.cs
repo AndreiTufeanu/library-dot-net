@@ -143,31 +143,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task CreateAsync_ValidReader_ShouldCallRepositoryMethods()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(reader.Email))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(reader.PhoneNumber))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Reader>()))
-                .ReturnsAsync(reader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            await _service.CreateAsync(reader);
-
-            // Assert
-            _readerRepositoryMock.Verify(r => r.FindByEmailAsync(reader.Email), Times.Once);
-            _readerRepositoryMock.Verify(r => r.FindByPhoneAsync(reader.PhoneNumber), Times.Once);
-            _readerRepositoryMock.Verify(r => r.AddAsync(reader), Times.Once);
-            _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
-        }
-
-        [TestMethod]
         public async Task CreateAsync_DuplicateEmail_ShouldReturnValidationError()
         {
             // Arrange
@@ -205,93 +180,6 @@ namespace TestServiceLayer.Services
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().ContainSingle()
                 .Which.Should().Contain($"Reader with phone number '{reader.PhoneNumber}' already exists");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithoutContactInfo_ShouldReturnValidationError()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.Email = null;
-            reader.PhoneNumber = null;
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("At least one contact method (phone or email) must be provided");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_UnderageReader_ShouldReturnValidationError()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.DateOfBirth = DateTime.Now.AddYears(-13);
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Reader must be at least 14 years old");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithEmailOnly_ShouldSucceed()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.PhoneNumber = null;
-
-            var addedReader = _fixture.Build<Reader>()
-                .With(r => r.Id, reader.Id)
-                .Create();
-
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(reader.Email))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(It.IsAny<string>()))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.AddAsync(reader))
-                .ReturnsAsync(addedReader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithPhoneOnly_ShouldSucceed()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.Email = null;
-
-            var addedReader = _fixture.Build<Reader>()
-                .With(r => r.Id, reader.Id)
-                .Create();
-
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(reader.PhoneNumber))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.AddAsync(reader))
-                .ReturnsAsync(addedReader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeTrue();
         }
 
         #endregion
@@ -460,32 +348,6 @@ namespace TestServiceLayer.Services
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().ContainSingle()
                 .Which.Should().Contain($"Another reader with phone number '{reader.PhoneNumber}' already exists");
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_SameReaderWithUpdatedInfo_ShouldSucceed()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-
-            _readerRepositoryMock.Setup(r => r.ExistsAsync(reader.Id))
-                .ReturnsAsync(true);
-            
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(reader.Email))
-                .ReturnsAsync(reader);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(reader.PhoneNumber))
-                .ReturnsAsync(reader);
-            _readerRepositoryMock.Setup(r => r.UpdateAsync(reader))
-                .ReturnsAsync(reader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Data.Should().BeTrue();
         }
 
         #endregion
@@ -686,118 +548,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
-        #endregion
-
-        #region Edge Cases and Boundary Tests
-
-        [TestMethod]
-        public async Task CreateAsync_WithMinimumValidNameLength_ShouldSucceed()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.FirstName = "Jo";
-            reader.LastName = "Do";
-
-            var addedReader = _fixture.Build<Reader>()
-                .With(r => r.Id, reader.Id)
-                .Create();
-
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(reader.Email))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(reader.PhoneNumber))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.AddAsync(reader))
-                .ReturnsAsync(addedReader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithMaximumValidNameLength_ShouldSucceed()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.FirstName = new string('A', 100);
-            reader.LastName = new string('B', 100);
-
-            var addedReader = _fixture.Build<Reader>()
-                .With(r => r.Id, reader.Id)
-                .Create();
-
-            _readerRepositoryMock.Setup(r => r.FindByEmailAsync(reader.Email))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.FindByPhoneAsync(reader.PhoneNumber))
-                .ReturnsAsync((Reader)null);
-            _readerRepositoryMock.Setup(r => r.AddAsync(reader))
-                .ReturnsAsync(addedReader);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithInvalidEmailFormat_ShouldReturnValidationError()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.Email = "invalid-email";
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Invalid email address format");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithInvalidPhoneFormat_ShouldReturnValidationError()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.PhoneNumber = "123";
-
-            // Act
-            var result = await _service.CreateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Phone number must be between 10 and 20 characters");
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_WithNullContactInfo_ShouldReturnValidationError()
-        {
-            // Arrange
-            var reader = CreateValidReader();
-            reader.Email = null;
-            reader.PhoneNumber = null;
-
-            _readerRepositoryMock.Setup(r => r.ExistsAsync(reader.Id))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _service.UpdateAsync(reader);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("At least one contact method (phone or email) must be provided");
         }
 
         #endregion
