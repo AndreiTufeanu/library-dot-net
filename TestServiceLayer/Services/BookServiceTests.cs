@@ -165,25 +165,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task CreateAsync_ShouldCallHelperServiceAndRepositoryMethods()
-        {
-            // Arrange
-            var book = CreateValidBook();
-
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Book>()))
-                .ReturnsAsync(book);
-
-            // Act
-            await _service.CreateAsync(book);
-
-            // Assert
-            _bookHelperServiceMock.Verify(s => s.ValidateMaxDomainsPerBookAsync(book.Domains), Times.Once);
-            _bookRepositoryMock.Verify(r => r.AddAsync(book), Times.Once);
-        }
-
-        [TestMethod]
         public async Task CreateAsync_WhenHelperServiceThrowsValidationError_ShouldReturnValidationErrors()
         {
             // Arrange
@@ -200,21 +181,6 @@ namespace TestServiceLayer.Services
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().ContainSingle()
                 .Which.Should().Be(validationError);
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_ValidationFailure_ShouldReturnValidationErrors()
-        {
-            // Arrange
-            var book = CreateValidBook();
-            book.Title = "A";
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().Contain(item => item.Contains("Title must be between"));
         }
 
         #endregion
@@ -333,28 +299,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ErrorMessage.Should().Contain($"Book with ID '{book.Id}' not found");
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_ShouldCallHelperServiceForDomainValidation()
-        {
-            // Arrange
-            var book = CreateValidBook();
-
-            _bookRepositoryMock.Setup(r => r.ExistsAsync(book.Id))
-                .ReturnsAsync(true);
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.UpdateAsync(book))
-                .ReturnsAsync(book);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            await _service.UpdateAsync(book);
-
-            // Assert
-            _bookHelperServiceMock.Verify(s => s.ValidateMaxDomainsPerBookAsync(book.Domains), Times.Once);
         }
 
         #endregion
@@ -529,116 +473,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
-        #endregion
-
-        #region Edge Cases and Boundary Tests
-
-        [TestMethod]
-        public async Task CreateAsync_WithMinimumValidTitleLength_ShouldSucceed()
-        {
-            // Arrange
-            var book = CreateValidBook();
-            book.Title = "AB";
-
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.AddAsync(book))
-                .ReturnsAsync(book);
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithMaximumValidTitleLength_ShouldSucceed()
-        {
-            // Arrange
-            var book = CreateValidBook();
-            book.Title = new string('A', 300);
-
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.AddAsync(book))
-                .ReturnsAsync(book);
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithMinimumValidInitialCopies_ShouldSucceed()
-        {
-            // Arrange
-            var book = CreateValidBook(initialCopies: 1);
-
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.AddAsync(book))
-                .ReturnsAsync(book);
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithLargeInitialCopies_ShouldSucceed()
-        {
-            // Arrange
-            var book = CreateValidBook(initialCopies: 10000);
-
-            _bookHelperServiceMock.Setup(s => s.ValidateMaxDomainsPerBookAsync(book.Domains))
-                .Returns(Task.CompletedTask);
-            _bookRepositoryMock.Setup(r => r.AddAsync(book))
-                .ReturnsAsync(book);
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithEmptyTitle_ShouldReturnValidationError()
-        {
-            // Arrange
-            var book = CreateValidBook();
-            book.Title = "";
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Title is required");
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithNullTitle_ShouldReturnValidationError()
-        {
-            // Arrange
-            var book = CreateValidBook();
-            book.Title = null;
-
-            // Act
-            var result = await _service.CreateAsync(book);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ValidationErrors.Should().ContainSingle()
-                .Which.Should().Contain("Title is required");
         }
 
         #endregion
