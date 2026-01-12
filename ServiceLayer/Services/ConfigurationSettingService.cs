@@ -11,13 +11,30 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
+    /// <summary>Provides centralized configuration management for the library management system.</summary>
+    /// <remarks>
+    /// Implements <see cref="IConfigurationSettingService"/> to retrieve and cache business rule parameters.
+    /// Provides intelligent caching and applies privilege adjustments for librarian users.
+    /// </remarks>
     public class ConfigurationSettingService : IConfigurationSettingService
     {
+        /// <summary>The repository for accessing configuration settings from the database.</summary>
         private readonly IConfigurationSettingRepository _repository;
+
+        /// <summary>The memory cache instance for caching configuration values.</summary>
         private readonly IMemoryCache _cache;
+
+        /// <summary>The dictionary containing default configuration values from <see cref="ConfigurationConstants"/>.</summary>
         private readonly ConcurrentDictionary<string, object> _defaultValues;
+
+        /// <summary>The cache duration for configuration values.</summary>
         private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(30);
 
+        /// <summary>Initializes a new instance of the <see cref="ConfigurationSettingService"/> class.</summary>
+        /// <param name="repository">The repository for accessing configuration settings from the database.</param>
+        /// <param name="cache">The memory cache instance for caching configuration values.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="repository"/> or <paramref name="cache"/> is null.</exception>
+        /// <remarks>Initializes default values from <see cref="ConfigurationConstants"/> for fallback when database configuration is unavailable.</remarks>
         public ConfigurationSettingService(IConfigurationSettingRepository repository, IMemoryCache cache)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -46,6 +63,27 @@ namespace ServiceLayer.Services
             };
         }
 
+        /// <summary>Retrieves a configuration value from cache or repository, implementing the cache-aside pattern.</summary>
+        /// <typeparam name="T">The type of the configuration value to retrieve.</typeparam>
+        /// <param name="key">The configuration key to look up.</param>
+        /// <param name="getter">The asynchronous function to retrieve the value from the repository if not cached.</param>
+        /// <returns>The configuration value of type <typeparamref name="T"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method implements the cache-aside pattern: it first checks the memory cache for the value.
+        /// If found, it returns the cached value; otherwise, it calls the provided <paramref name="getter"/>
+        /// function to retrieve the value from the repository, caches it with a 30-minute expiration,
+        /// and then returns it.
+        /// </para>
+        /// <para>
+        /// Cache keys are formatted as "Config_{key}" to avoid collisions with other cached items.
+        /// The method is generic to support different configuration value types (int, string, etc.).
+        /// </para>
+        /// <para>
+        /// If the <paramref name="getter"/> function throws an exception, the exception is propagated
+        /// and no value is cached, ensuring stale data is not stored in the cache.
+        /// </para>
+        /// </remarks>
         private async Task<T> GetCachedValueAsync<T>(string key, Func<Task<T>> getter)
         {
             var cacheKey = $"Config_{key}";
@@ -60,6 +98,8 @@ namespace ServiceLayer.Services
         }
 
         #region Book Constants
+
+        /// <inheritdoc/>
         public async Task<int> GetMaxDomainsPerBookAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.MaxDomainsPerBook, async () =>
@@ -72,6 +112,8 @@ namespace ServiceLayer.Services
         #endregion
 
         #region Reader Constants
+
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksInPeriodAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriod, async () =>
@@ -83,6 +125,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksInPeriodWindowDaysAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksInPeriodWindowDays, async () =>
@@ -94,6 +137,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue / 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetBorrowingPeriodDaysAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.BorrowingPeriodDays, async () =>
@@ -103,6 +147,7 @@ namespace ServiceLayer.Services
             });
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksPerBorrowingAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksPerBorrowing, async () =>
@@ -114,6 +159,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksSameDomainAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxBooksSameDomain, async () =>
@@ -125,6 +171,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetSameDomainTimeLimitMonthsAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.SameDomainTimeLimitMonths, async () =>
@@ -134,6 +181,7 @@ namespace ServiceLayer.Services
             });
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetMaxOvertimeSumDaysAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.MaxOvertimeSumDays, async () =>
@@ -145,6 +193,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue * 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetExtensionWindowMonthsAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.ExtensionWindowMonths, async () =>
@@ -154,6 +203,7 @@ namespace ServiceLayer.Services
             });
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetSameBookDelayDaysAsync(bool forLibrarian = false)
         {
             var baseValue = await GetCachedValueAsync(ConfigurationConstants.SameBookDelayDays, async () =>
@@ -165,6 +215,7 @@ namespace ServiceLayer.Services
             return forLibrarian ? baseValue / 2 : baseValue;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksPerDayAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.MaxBooksPerDay, async () =>
@@ -176,6 +227,8 @@ namespace ServiceLayer.Services
         #endregion
 
         #region Librarian Constants
+
+        /// <inheritdoc/>
         public async Task<int> GetMaxBooksLentPerDayAsync()
         {
             return await GetCachedValueAsync(ConfigurationConstants.MaxBooksLentPerDay, async () =>
@@ -186,6 +239,7 @@ namespace ServiceLayer.Services
         }
         #endregion
 
+        /// <inheritdoc/>
         public async Task RefreshSettingAsync(string key)
         {
             var cacheKey = $"Config_{key}";

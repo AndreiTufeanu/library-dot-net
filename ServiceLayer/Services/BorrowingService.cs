@@ -14,13 +14,33 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
+    /// <summary>Provides service operations for managing <see cref="Borrowing"/> entities in the library management system.</summary>
+    /// <remarks>
+    /// Implements <see cref="IBorrowingService"/> to handle the complete borrowing lifecycle.
+    /// Enforces all borrowing constraints with privilege adjustments.
+    /// </remarks>
+
     public class BorrowingService : BaseService, IBorrowingService
     {
+        /// <summary>The unit of work instance for coordinating repository operations and transactions.</summary>
         private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>The validator instance for enforcing borrowing-specific business rules.</summary>
         private readonly IValidator<Borrowing> _validator;
+
+        /// <summary>The helper service for borrowing rule validation.</summary>
         private readonly IBorrowingHelperService _borrowingHelperService;
+
+        /// <summary>The configuration service for retrieving business rule parameters.</summary>
         private readonly IConfigurationSettingService _configService;
 
+        /// <summary>Initializes a new instance of the <see cref="BorrowingService"/> class.</summary>
+        /// <param name="unitOfWork">The unit of work instance for coordinating repository operations.</param>
+        /// <param name="validator">The validator instance for enforcing borrowing-specific business rules.</param>
+        /// <param name="borrowingHelperService">The helper service for borrowing rule validation.</param>
+        /// <param name="logger">The logger instance for logging service operations.</param>
+        /// <param name="configService">The configuration service for retrieving business rule parameters.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any required parameter is null.</exception>
         public BorrowingService(
             IUnitOfWork unitOfWork,
             IValidator<Borrowing> validator,
@@ -35,6 +55,9 @@ namespace ServiceLayer.Services
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="BusinessRuleException"></exception>
         public async Task<ServiceResult<Borrowing>> CreateAsync(Borrowing borrowing)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -89,6 +112,8 @@ namespace ServiceLayer.Services
             }, nameof(CreateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
         public async Task<ServiceResult<Borrowing>> GetByIdAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -103,6 +128,7 @@ namespace ServiceLayer.Services
             }, nameof(GetByIdAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<IEnumerable<Borrowing>>> GetAllAsync()
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -112,6 +138,8 @@ namespace ServiceLayer.Services
             }, nameof(GetAllAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
         public async Task<ServiceResult<bool>> UpdateAsync(Borrowing borrowing)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -130,6 +158,10 @@ namespace ServiceLayer.Services
             }, nameof(UpdateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="BusinessRuleException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<ServiceResult<bool>> DeleteAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -157,6 +189,7 @@ namespace ServiceLayer.Services
             }, nameof(DeleteAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<bool>> ExistsAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -166,6 +199,8 @@ namespace ServiceLayer.Services
             }, nameof(ExistsAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
         public async Task<ServiceResult<bool>> FinishBorrowingAsync(Guid borrowingId, DateTime? returnDate = null)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -184,6 +219,10 @@ namespace ServiceLayer.Services
             }, nameof(FinishBorrowingAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="BusinessRuleException"></exception>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task<ServiceResult<bool>> ExtendBorrowingAsync(Guid borrowingId, int extensionDays)
         {
             return await ExecuteServiceOperationAsync(async () =>

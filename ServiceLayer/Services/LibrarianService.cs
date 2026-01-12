@@ -13,10 +13,20 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
+    /// <summary>Provides service operations for managing <see cref="Librarian"/> entities in the library management system.</summary>
+    /// <remarks>
+    /// Implements <see cref="ILibrarianService"/> to handle librarian accounts and their associated reader profiles.
+    /// Ensures each reader can be associated with at most one librarian account.
+    /// </remarks>
     public class LibrarianService : BaseService, ILibrarianService
     {
+        /// <summary>The unit of work instance for coordinating repository operations and transactions.</summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>Initializes a new instance of the <see cref="LibrarianService"/> class.</summary>
+        /// <param name="unitOfWork">The unit of work instance for coordinating repository operations.</param>
+        /// <param name="logger">The logger instance for logging service operations.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="unitOfWork"/> is null.</exception>
         public LibrarianService(
             IUnitOfWork unitOfWork,
             ILogger<LibrarianService> logger)
@@ -25,6 +35,9 @@ namespace ServiceLayer.Services
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task<ServiceResult<Librarian>> CreateAsync(Librarian librarian)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -54,6 +67,8 @@ namespace ServiceLayer.Services
             }, nameof(CreateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
         public async Task<ServiceResult<Librarian>> GetByIdAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -68,6 +83,7 @@ namespace ServiceLayer.Services
             }, nameof(GetByIdAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<IEnumerable<Librarian>>> GetAllAsync()
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -77,6 +93,9 @@ namespace ServiceLayer.Services
             }, nameof(GetAllAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task<ServiceResult<bool>> UpdateAsync(Librarian librarian)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -110,6 +129,10 @@ namespace ServiceLayer.Services
             }, nameof(UpdateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="BusinessRuleException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<ServiceResult<bool>> DeleteAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -137,6 +160,7 @@ namespace ServiceLayer.Services
             }, nameof(DeleteAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<bool>> ExistsAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>

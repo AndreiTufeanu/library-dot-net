@@ -14,10 +14,20 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services
 {
+    /// <summary>Provides service operations for managing <see cref="BookType"/> entities in the library management system.</summary>
+    /// <remarks>
+    /// Implements <see cref="IBookTypeService"/> to handle book type definitions with uniqueness enforcement.
+    /// Manages reference data for book types and prevents deletion of types in use by existing editions.
+    /// </remarks>
     public class BookTypeService : BaseService, IBookTypeService
     {
+        /// <summary>The unit of work instance for coordinating repository operations and transactions.</summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>Initializes a new instance of the <see cref="BookTypeService"/> class.</summary>
+        /// <param name="unitOfWork">The unit of work instance for coordinating repository operations.</param>
+        /// <param name="logger">The logger instance for logging service operations.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="unitOfWork"/> is null.</exception>
         public BookTypeService(
             IUnitOfWork unitOfWork,
             ILogger<BookTypeService> logger)
@@ -26,6 +36,8 @@ namespace ServiceLayer.Services
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task<ServiceResult<BookType>> CreateAsync(BookType bookType)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -46,6 +58,8 @@ namespace ServiceLayer.Services
             }, nameof(CreateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
         public async Task<ServiceResult<BookType>> GetByIdAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -60,6 +74,7 @@ namespace ServiceLayer.Services
             }, nameof(GetByIdAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<IEnumerable<BookType>>> GetAllAsync()
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -69,6 +84,9 @@ namespace ServiceLayer.Services
             }, nameof(GetAllAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task<ServiceResult<bool>> UpdateAsync(BookType bookType)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -93,6 +111,10 @@ namespace ServiceLayer.Services
             }, nameof(UpdateAsync));
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="BusinessRuleException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task<ServiceResult<bool>> DeleteAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>
@@ -120,6 +142,7 @@ namespace ServiceLayer.Services
             }, nameof(DeleteAsync));
         }
 
+        /// <inheritdoc/>
         public async Task<ServiceResult<bool>> ExistsAsync(Guid id)
         {
             return await ExecuteServiceOperationAsync(async () =>

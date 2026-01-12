@@ -11,12 +11,27 @@ using System.Threading.Tasks;
 
 namespace ServiceLayer.Services.HelperServices
 {
+    /// <summary>Provides comprehensive validation of borrowing business rules as defined in the library requirements.</summary>
+    /// <remarks>
+    /// Implements <see cref="IBorrowingHelperService"/> to validate all borrowing constraints.
+    /// Applies appropriate adjustments for librarian privileges where applicable.
+    /// </remarks>
     public class BorrowingHelperService : IBorrowingHelperService
     {
+        /// <summary>The unit of work instance for accessing repository operations and historical data.</summary>
         private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>The configuration service for retrieving business rule parameters.</summary>
         private readonly IConfigurationSettingService _configService;
+
+        /// <summary>The helper service for book-related domain hierarchy operations.</summary>
         private readonly IBookHelperService _bookHelperService;
 
+        /// <summary>Initializes a new instance of the <see cref="BorrowingHelperService"/> class.</summary>
+        /// <param name="unitOfWork">The unit of work instance for accessing repository operations and historical data.</param>
+        /// <param name="configService">The configuration service for retrieving business rule parameters.</param>
+        /// <param name="bookHelperService">The helper service for book-related domain hierarchy operations.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any required parameter is null.</exception>
         public BorrowingHelperService(
             IUnitOfWork unitOfWork,
             IConfigurationSettingService configService,
@@ -27,11 +42,14 @@ namespace ServiceLayer.Services.HelperServices
             _bookHelperService = bookHelperService ?? throw new ArgumentNullException(nameof(bookHelperService));
         }
 
+        /// <inheritdoc/>
         public async Task<bool> IsReaderAlsoLibrarianAsync(Guid readerId)
         {
             return await _unitOfWork.Librarians.IsReaderAlsoLibrarianAsync(readerId);
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateMaxBooksPerBorrowingAsync(Borrowing borrowing)
         {
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
@@ -49,6 +67,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateMaxBooksInPeriodAsync(Borrowing borrowing)
         {
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
@@ -66,6 +86,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateMaxBooksSameDomainAsync(Borrowing borrowing)
         {
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
@@ -101,6 +123,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateMaxOvertimeSumDaysAsync(Borrowing borrowing)
         {
             if (!borrowing.ExtensionDays.HasValue)
@@ -121,6 +145,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateSameBookDelayAsync(Borrowing borrowing)
         {
             var isLibrarianReader = await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id);
@@ -155,6 +181,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateMaxBooksPerDayAsync(Borrowing borrowing)
         {
             if (await IsReaderAlsoLibrarianAsync(borrowing.Reader.Id))
@@ -170,6 +198,8 @@ namespace ServiceLayer.Services.HelperServices
             }
         }
 
+        /// <inheritdoc/>
+        /// <exception cref="AggregateValidationException"></exception>
         public async Task ValidateLibrarianLendingLimitAsync(Borrowing borrowing)
         {
             var maxBooksLentPerDay = await _configService.GetMaxBooksLentPerDayAsync();
