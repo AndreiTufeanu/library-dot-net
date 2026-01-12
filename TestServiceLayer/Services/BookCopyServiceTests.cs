@@ -311,7 +311,7 @@ namespace TestServiceLayer.Services
 
         #endregion
 
-        #region DeleteAsync Tests (Without Transactions)
+        #region DeleteAsync Tests
 
         [TestMethod]
         public async Task DeleteAsync_BookCopyNotCurrentlyBorrowed_ShouldReturnSuccess()

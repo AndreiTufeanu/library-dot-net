@@ -468,7 +468,7 @@ namespace TestServiceLayer.Services
 
         #endregion
 
-        #region DeleteAsync Tests (Adjusted Version Without Transaction)
+        #region DeleteAsync Tests
 
         [TestMethod]
         public async Task DeleteAsync_EditionWithoutCopies_ShouldReturnSuccess()
