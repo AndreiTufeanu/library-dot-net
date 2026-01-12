@@ -10,15 +10,25 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
+    /// <summary>Provides data access operations for <see cref="Author"/> entities.</summary>
+    /// <remarks>
+    /// Implements <see cref="IAuthorRepository"/> to provide CRUD operations and author-specific queries.
+    /// Uses Entity Framework for database access with eager loading of related entities.
+    /// </remarks>
     public class AuthorRepository : IAuthorRepository
     {
+        /// <summary>The Entity Framework database context for accessing author data.</summary>
         private readonly LibraryContext _context;
 
+        /// <summary>Initializes a new instance of the <see cref="AuthorRepository"/> class.</summary>
+        /// <param name="context">The database context for accessing author data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
         public AuthorRepository(LibraryContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <inheritdoc/>
         public async Task<Author> GetByIdAsync(Guid id)
         {
             return await _context.Authors
@@ -26,6 +36,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Author>> GetAllAsync()
         {
             return await _context.Authors
@@ -33,16 +44,19 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Authors.AnyAsync(a => a.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<Author> AddAsync(Author entity)
         {
             return await Task.FromResult(_context.Authors.Add(entity));
         }
 
+        /// <inheritdoc/>
         public async Task<Author> UpdateAsync(Author entity)
         {
             var existingEntity = await _context.Authors.FindAsync(entity.Id);
@@ -53,6 +67,7 @@ namespace Infrastructure.Repositories
             return existingEntity;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> DeleteAsync(Guid id)
         {
             var author = await _context.Authors.FindAsync(id);
@@ -63,6 +78,7 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        /// <inheritdoc/>
         public async Task<Author> FindByNameAsync(string firstName, string lastName)
         {
             return await _context.Authors
@@ -71,6 +87,7 @@ namespace Infrastructure.Repositories
                     a.LastName.ToLower() == lastName.ToLower());
         }
 
+        /// <inheritdoc/>
         public async Task<bool> HasBooksAsync(Guid id)
         {
             return await _context.Authors

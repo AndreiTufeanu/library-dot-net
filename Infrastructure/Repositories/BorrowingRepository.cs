@@ -10,15 +10,25 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
+    /// <summary>Provides data access operations for <see cref="Borrowing"/> entities.</summary>
+    /// <remarks>
+    /// Implements <see cref="IBorrowingRepository"/> to provide CRUD operations and complex borrowing queries.
+    /// Manages borrowing transactions with comprehensive relationship loading for business rule validation.
+    /// </remarks>
     public class BorrowingRepository : IBorrowingRepository
     {
+        /// <summary>The Entity Framework database context for accessing borrowing data.</summary>
         private readonly LibraryContext _context;
 
+        /// <summary>Initializes a new instance of the <see cref="BorrowingRepository"/> class.</summary>
+        /// <param name="context">The database context for accessing borrowing data.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
         public BorrowingRepository(LibraryContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <inheritdoc/>
         public async Task<Borrowing> GetByIdAsync(Guid id)
         {
             return await _context.Borrowings
@@ -28,6 +38,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<IEnumerable<Borrowing>> GetAllAsync()
         {
             return await _context.Borrowings
@@ -36,16 +47,19 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await _context.Borrowings.AnyAsync(b => b.Id == id);
         }
 
+        /// <inheritdoc/>
         public async Task<Borrowing> AddAsync(Borrowing entity)
         {
             return await Task.FromResult(_context.Borrowings.Add(entity));
         }
 
+        /// <inheritdoc/>
         public async Task<Borrowing> UpdateAsync(Borrowing entity)
         {
             var existingEntity = await _context.Borrowings.FindAsync(entity.Id);
@@ -56,6 +70,7 @@ namespace Infrastructure.Repositories
             return existingEntity;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> DeleteAsync(Guid id)
         {
             var borrowing = await _context.Borrowings.FindAsync(id);
@@ -66,6 +81,7 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetCountByReaderInPeriodAsync(Guid readerId, DateTime startDate, DateTime endDate)
         {
             return await _context.Borrowings
@@ -73,6 +89,7 @@ namespace Infrastructure.Repositories
                 .CountAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetTotalExtensionDaysByReaderInPeriodAsync(Guid readerId, DateTime startDate)
         {
             return await _context.Borrowings
@@ -80,6 +97,7 @@ namespace Infrastructure.Repositories
                 .SumAsync(b => b.ExtensionDays.Value);
         }
 
+        /// <inheritdoc/>
         public async Task<DateTime?> GetLastBorrowDateForBookByReaderAsync(Guid readerId, Guid bookId)
         {
             var lastBorrowing = await _context.Borrowings
@@ -91,6 +109,7 @@ namespace Infrastructure.Repositories
             return lastBorrowing?.BorrowDate;
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetCountByReaderOnDateAsync(Guid readerId, DateTime date)
         {
             var startOfDay = date.Date;
@@ -102,6 +121,7 @@ namespace Infrastructure.Repositories
                 .CountAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetCountByLibrarianOnDateAsync(Guid librarianId, DateTime date)
         {
             var startOfDay = date.Date;
@@ -113,6 +133,7 @@ namespace Infrastructure.Repositories
                 .CountAsync();
         }
 
+        /// <inheritdoc/>
         public async Task<int> GetCountByReaderAndDomainsInPeriodAsync(
             Guid readerId,
             List<Guid> domainIds,
