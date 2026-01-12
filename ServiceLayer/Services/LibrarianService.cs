@@ -88,7 +88,6 @@ namespace ServiceLayer.Services
 
                 ValidationHelper.Validate(librarian);
 
-                // If changing ReaderDetails, verify the reader exists and isn't already a librarian
                 if (librarian.ReaderDetails != null)
                 {
                     var reader = await _unitOfWork.Readers.GetByIdAsync(librarian.ReaderDetails.Id);
