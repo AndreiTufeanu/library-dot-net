@@ -16,6 +16,16 @@ namespace ServiceLayer.Validators
     public class BorrowingValidator : AbstractValidator<Borrowing>
     {
         /// <summary>
+        /// Number of book copies threshold at which domain diversity validation is required.
+        /// </summary>
+        private const int DomainDiversityThreshold = 3;
+
+        /// <summary>
+        /// Minimum number of distinct domains required when domain diversity validation is applied.
+        /// </summary>
+        private const int MinimumDistinctDomains = 2;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BorrowingValidator"/> class
         /// and configures the validation rules.
         /// </summary>
@@ -85,7 +95,7 @@ namespace ServiceLayer.Validators
         /// </returns>
         private bool HaveSufficientDomainDiversity(ICollection<BookCopy> bookCopies)
         {
-            if (bookCopies.Count < 3)
+            if (bookCopies.Count < DomainDiversityThreshold)
                 return true;
 
             var domainIds = new HashSet<Guid>();
@@ -99,7 +109,7 @@ namespace ServiceLayer.Validators
                 }
             }
 
-            return domainIds.Count >= 2;
+            return domainIds.Count >= MinimumDistinctDomains;
         }
     }
 }

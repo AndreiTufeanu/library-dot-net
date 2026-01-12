@@ -15,6 +15,11 @@ namespace ServiceLayer.Validators
     public class ReaderValidator : AbstractValidator<Reader>
     {
         /// <summary>
+        /// Minimum age in years required for a reader to be eligible.
+        /// </summary>
+        private const int MinimumReaderAgeYears = 14;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ReaderValidator"/> class
         /// and configures the validation rules.
         /// </summary>
@@ -27,8 +32,8 @@ namespace ServiceLayer.Validators
 
             // Reader must be at least 14 years old
             RuleFor(x => x.DateOfBirth)
-                .Must(dob => dob.AddYears(14) <= DateTime.Now)
-                .WithMessage("Reader must be at least 14 years old.");
+                .Must(dob => dob.AddYears(MinimumReaderAgeYears) <= DateTime.Now)
+                .WithMessage($"Reader must be at least {MinimumReaderAgeYears} years old.");
         }
     }
 }
