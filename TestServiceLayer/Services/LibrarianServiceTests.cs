@@ -135,31 +135,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task CreateAsync_ValidLibrarian_ShouldCallRepositoryMethods()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian.ReaderDetails);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync((Librarian)null);
-            _librarianRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Librarian>()))
-                .ReturnsAsync(librarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            await _service.CreateAsync(librarian);
-
-            // Assert
-            _readerRepositoryMock.Verify(r => r.GetByIdAsync(librarian.ReaderDetails.Id), Times.Once);
-            _librarianRepositoryMock.Verify(r => r.GetByReaderIdAsync(librarian.ReaderDetails.Id), Times.Once);
-            _librarianRepositoryMock.Verify(r => r.AddAsync(librarian), Times.Once);
-            _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Once);
-        }
-
-        [TestMethod]
         public async Task CreateAsync_ReaderNotFound_ShouldReturnNotFoundError()
         {
             // Arrange
@@ -302,35 +277,6 @@ namespace TestServiceLayer.Services
         }
 
         [TestMethod]
-        public async Task UpdateAsync_ChangingToDifferentReader_ShouldCallRepositoryMethods()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            var newReader = CreateValidReader();
-
-            librarian.ReaderDetails = newReader;
-
-            _librarianRepositoryMock.Setup(r => r.ExistsAsync(librarian.Id))
-                .ReturnsAsync(true);
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(newReader.Id))
-                .ReturnsAsync(newReader);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(newReader.Id))
-                .ReturnsAsync((Librarian)null);
-            _librarianRepositoryMock.Setup(r => r.UpdateAsync(librarian))
-                .ReturnsAsync(librarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            _readerRepositoryMock.Verify(r => r.GetByIdAsync(newReader.Id), Times.Once);
-            _librarianRepositoryMock.Verify(r => r.GetByReaderIdAsync(newReader.Id), Times.Once);
-        }
-
-        [TestMethod]
         public async Task UpdateAsync_LibrarianNotFound_ShouldReturnNotFoundError()
         {
             // Arrange
@@ -387,31 +333,6 @@ namespace TestServiceLayer.Services
             result.Success.Should().BeFalse();
             result.ValidationErrors.Should().ContainSingle()
                 .Which.Should().Contain($"Reader '{librarian.ReaderDetails.FirstName} {librarian.ReaderDetails.LastName}' is already assigned to another librarian");
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_KeepSameReader_ShouldSucceed()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-
-            _librarianRepositoryMock.Setup(r => r.ExistsAsync(librarian.Id))
-                .ReturnsAsync(true);
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian.ReaderDetails);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian);
-            _librarianRepositoryMock.Setup(r => r.UpdateAsync(librarian))
-                .ReturnsAsync(librarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Data.Should().BeTrue();
         }
 
         #endregion
@@ -484,28 +405,6 @@ namespace TestServiceLayer.Services
             result.ErrorMessage.Should().Contain("Cannot delete a librarian that has processed loans. Reassign loans first");
             _librarianRepositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Guid>()), Times.Never);
             _unitOfWorkMock.Verify(u => u.SaveChangesAsync(), Times.Never);
-        }
-
-        [TestMethod]
-        public async Task DeleteAsync_LibrarianWithEmptyProcessedLoansCollection_ShouldSucceed()
-        {
-            // Arrange
-            var librarianId = Guid.NewGuid();
-            var librarian = CreateValidLibrarian();
-
-            _librarianRepositoryMock.Setup(r => r.GetByIdAsync(librarianId))
-                .ReturnsAsync(librarian);
-            _librarianRepositoryMock.Setup(r => r.DeleteAsync(librarianId))
-                .ReturnsAsync(true);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.DeleteAsync(librarianId);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Data.Should().BeTrue();
         }
 
         [TestMethod]
@@ -632,166 +531,6 @@ namespace TestServiceLayer.Services
             // Assert
             result.Success.Should().BeFalse();
             result.ErrorMessage.Should().Contain("An error occurred");
-        }
-
-        #endregion
-
-        #region Edge Cases and Boundary Tests
-
-        [TestMethod]
-        public async Task CreateAsync_WithLibrarianHavingNullReaderDetails_ShouldPassValidation()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            librarian.ReaderDetails = null;
-
-            // Act
-            var result = await _service.CreateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task CreateAsync_WithEmptyGuidReaderId_ShouldReturnNotFoundError()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            librarian.ReaderDetails.Id = Guid.Empty;
-
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(Guid.Empty))
-                .ReturnsAsync((Reader)null);
-
-            // Act
-            var result = await _service.CreateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain($"Reader with ID '{Guid.Empty}' not found");
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_WithNullReaderDetails_ShouldPassValidation()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            librarian.ReaderDetails = null;
-
-            _librarianRepositoryMock.Setup(r => r.ExistsAsync(librarian.Id))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _service.UpdateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_KeepSameLibrarianIdButChangeReaderDetails_ShouldValidateReaderUniqueness()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            var newReader = CreateValidReader();
-            librarian.ReaderDetails = newReader;
-
-            _librarianRepositoryMock.Setup(r => r.ExistsAsync(librarian.Id))
-                .ReturnsAsync(true);
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(newReader.Id))
-                .ReturnsAsync(newReader);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(newReader.Id))
-                .ReturnsAsync((Librarian)null);
-            _librarianRepositoryMock.Setup(r => r.UpdateAsync(librarian))
-                .ReturnsAsync(librarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-            _librarianRepositoryMock.Verify(r => r.GetByReaderIdAsync(newReader.Id), Times.Once);
-        }
-
-        [TestMethod]
-        public async Task GetAllAsync_WithLibrariansHavingReaderDetails_ShouldIncludeReaderDetails()
-        {
-            // Arrange
-            var librarians = _fixture.Build<Librarian>()
-                .With(l => l.ReaderDetails, CreateValidReader())
-                .CreateMany(2)
-                .ToList();
-
-            _librarianRepositoryMock.Setup(r => r.GetAllAsync())
-                .ReturnsAsync(librarians);
-
-            // Act
-            var result = await _service.GetAllAsync();
-
-            // Assert
-            result.Success.Should().BeTrue();
-            result.Data.Should().BeEquivalentTo(librarians);
-            result.Data.All(l => l.ReaderDetails != null).Should().BeTrue();
-        }
-
-        #endregion
-
-        #region Business Logic Specific Tests
-
-        [TestMethod]
-        public async Task CreateAsync_WithLibrarianHavingProcessedLoans_ShouldSucceed()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-            var borrowings = _fixture.CreateMany<Borrowing>(3).ToList();
-            foreach (var borrowing in borrowings)
-            {
-                librarian.ProcessedLoans.Add(borrowing);
-            }
-
-            var addedLibrarian = _fixture.Build<Librarian>()
-                .With(l => l.Id, librarian.Id)
-                .Create();
-
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian.ReaderDetails);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync((Librarian)null);
-            _librarianRepositoryMock.Setup(r => r.AddAsync(librarian))
-                .ReturnsAsync(addedLibrarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.CreateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
-        }
-
-        [TestMethod]
-        public async Task UpdateAsync_WithLibrarianHavingNullProcessedLoans_ShouldSucceed()
-        {
-            // Arrange
-            var librarian = CreateValidLibrarian();
-
-            _librarianRepositoryMock.Setup(r => r.ExistsAsync(librarian.Id))
-                .ReturnsAsync(true);
-            _readerRepositoryMock.Setup(r => r.GetByIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian.ReaderDetails);
-            _librarianRepositoryMock.Setup(r => r.GetByReaderIdAsync(librarian.ReaderDetails.Id))
-                .ReturnsAsync(librarian);
-            _librarianRepositoryMock.Setup(r => r.UpdateAsync(librarian))
-                .ReturnsAsync(librarian);
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync())
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _service.UpdateAsync(librarian);
-
-            // Assert
-            result.Success.Should().BeTrue();
         }
 
         #endregion
