@@ -69,10 +69,6 @@ namespace ServiceLayer.Services
             });
         }
 
-        public Task<int> GetDefaultMaxDomainsPerBookAsync()
-        {
-            return Task.FromResult((int)_defaultValues[ConfigurationConstants.MaxDomainsPerBook]);
-        }
         #endregion
 
         #region Reader Constants

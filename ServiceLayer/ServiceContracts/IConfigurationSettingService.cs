@@ -16,12 +16,6 @@ namespace ServiceLayer.ServiceContracts
         /// <returns>The configured maximum domains per book</returns>
         Task<int> GetMaxDomainsPerBookAsync();
 
-        /// <summary>
-        /// Gets the default maximum number of domains per book
-        /// </summary>
-        /// <returns>The default maximum domains per book</returns>
-        Task<int> GetDefaultMaxDomainsPerBookAsync();
-
         #endregion
 
         #region Reader Constants
