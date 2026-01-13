@@ -32,13 +32,15 @@ namespace Infrastructure.Repositories
         /// <inheritdoc/>
         public async Task<ConfigurationSetting> GetByIdAsync(Guid id)
         {
-            return await _context.ConfigurationSettings.FindAsync(id);
+            return await _context.ConfigurationSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cs => cs.Id == id);
         }
 
         /// <inheritdoc/>
         public async Task<IEnumerable<ConfigurationSetting>> GetAllAsync()
         {
-            return await _context.ConfigurationSettings.ToListAsync();
+            return await _context.ConfigurationSettings.AsNoTracking().ToListAsync();
         }
 
         /// <inheritdoc/>
@@ -79,6 +81,7 @@ namespace Infrastructure.Repositories
         public async Task<ConfigurationSetting> GetByKeyAsync(string key)
         {
             return await _context.ConfigurationSettings
+                .AsNoTracking()
                 .FirstOrDefaultAsync(cs => cs.Key == key);
         }
 
