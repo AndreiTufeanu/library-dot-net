@@ -19,8 +19,8 @@ namespace LibraryAppConsole
 
             using (var scope = serviceProvider.CreateScope())
             {
-                var bookService = serviceProvider.GetRequiredService<IBookService>();
-                var domainService = serviceProvider.GetRequiredService<IDomainService>();
+                var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
+                var domainService = scope.ServiceProvider.GetRequiredService<IDomainService>();
 
                 try
                 {
