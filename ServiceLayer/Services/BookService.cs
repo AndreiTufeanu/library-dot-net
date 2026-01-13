@@ -56,7 +56,9 @@ namespace ServiceLayer.Services
                 ValidationHelper.Validate(book, _validator);
                 await _bookHelperService.ValidateMaxDomainsPerBookAsync(book.Domains);
 
-                return await _unitOfWork.Books.AddAsync(book);
+                var addedBook = await _unitOfWork.Books.AddAsync(book);
+                await _unitOfWork.SaveChangesAsync();
+                return addedBook;
 
             }, nameof(CreateAsync));
         }
